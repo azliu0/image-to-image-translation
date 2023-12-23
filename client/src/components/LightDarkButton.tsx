@@ -7,9 +7,7 @@ import { MoonIcon, SunIcon } from "@modulz/radix-icons";
 
 function LightDarkButton() {
   const { setColorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme("dark", {
-    getInitialValueInEffect: true,
-  });
+  const computedColorScheme = useComputedColorScheme("dark");
   const dark = computedColorScheme === "dark";
 
   return (
