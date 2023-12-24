@@ -2,7 +2,7 @@ import { Flex, Center, Anchor } from "@mantine/core";
 import classes from "./root.module.css";
 import LightDarkButton from "../components/LightDarkButton";
 
-const GalleryPage = () => {
+const DetailsPage = () => {
   return (
     <>
       <Flex justify={"end"} className={classes.togglebtn}>
@@ -14,7 +14,7 @@ const GalleryPage = () => {
           <a className={classes.noUnderline} href="/">
             Image-to-Image Translation
           </a>{" "}
-          — Gallery
+          — Details
         </div>
       </Flex>
       <Center className={classes.referencesContainer}>
@@ -30,4 +30,4 @@ const GalleryPage = () => {
   );
 };
 
-export default GalleryPage;
+export default DetailsPage;

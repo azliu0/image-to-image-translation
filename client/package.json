@@ -12,12 +12,15 @@
   "dependencies": {
     "@fontsource/lexend": "^5.0.18",
     "@mantine/core": "^7.3.2",
+    "@mantine/dropzone": "^7.3.2",
     "@mantine/hooks": "^7.3.2",
     "@modulz/radix-icons": "^4.0.0",
     "@tabler/icons-react": "^2.44.0",
     "@types/react-router": "^5.1.20",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-icons": "^4.12.0",
     "react-jss": "^10.10.0",
     "react-router-dom": "^6.21.1"
   },

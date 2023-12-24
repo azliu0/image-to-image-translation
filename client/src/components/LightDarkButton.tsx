@@ -3,27 +3,39 @@ import {
   useMantineColorScheme,
   useComputedColorScheme,
 } from "@mantine/core";
-import { MoonIcon, SunIcon } from "@modulz/radix-icons";
+import { useState } from "react";
+import { IoInvertMode } from "react-icons/io5";
 
 function LightDarkButton() {
+  const [rotation, setRotation] = useState<number>(0);
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme("dark");
   const dark = computedColorScheme === "dark";
 
+  const handleToggleMode = () => {
+    setColorScheme(computedColorScheme === "light" ? "dark" : "light");
+    setTimeout(() => {
+      setRotation(rotation + 180);
+    }, 10);
+  };
+
   return (
     <ActionIcon
-      variant="outline"
-      color={dark ? "yellow" : "blue"}
-      onClick={() =>
-        setColorScheme(computedColorScheme === "light" ? "dark" : "light")
-      }
+      variant="transparent"
+      color={dark ? "white" : "black"}
+      onClick={handleToggleMode}
       title="Toggle color scheme"
+      w={36}
+      h={36}
     >
-      {dark ? (
-        <SunIcon style={{ width: 18, height: 18 }} />
-      ) : (
-        <MoonIcon style={{ width: 18, height: 18 }} />
-      )}
+      <div
+        style={{
+          transform: `rotate(${rotation}deg)`,
+          transition: "transform 0.05s ease-in-out",
+        }}
+      >
+        <IoInvertMode style={{ width: 30, height: 30 }} />
+      </div>
     </ActionIcon>
   );
 }
