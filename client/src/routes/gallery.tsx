@@ -16,6 +16,7 @@ const GalleryPage = () => {
           </a>{" "}
           — Gallery
         </div>
+        <div className={classes.subtitle}>[work in progress...]</div>
       </Flex>
       <Center className={classes.referencesContainer}>
         <Anchor href="/" className={classes.reference2}>
