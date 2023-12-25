@@ -1,8 +1,7 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { MantineProvider, createTheme } from "@mantine/core";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -25,21 +24,18 @@ const router = createBrowserRouter(
   )
 );
 
+const theme = createTheme({
+  fontFamily:
+    "-apple-system,BlinkMacSystemFont,segoe ui,Roboto,Oxygen,Ubuntu,Cantarell,open sans,helvetica neue,sans-serif",
+  headings: {
+    fontFamily:
+      "-apple-system,BlinkMacSystemFont,segoe ui,Roboto,Oxygen,Ubuntu,Cantarell,open sans,helvetica neue,sans-serif",
+  },
+});
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <>
-    <ColorSchemeScript defaultColorScheme="dark" />
-    <MantineProvider
-      theme={{
-        fontFamily:
-          "-apple-system,BlinkMacSystemFont,segoe ui,Roboto,Oxygen,Ubuntu,Cantarell,open sans,helvetica neue,sans-serif",
-        headings: {
-          fontFamily:
-            "-apple-system,BlinkMacSystemFont,segoe ui,Roboto,Oxygen,Ubuntu,Cantarell,open sans,helvetica neue,sans-serif",
-        },
-      }}
-      withGlobalStyles
-      withNormalizeCSS
-    >
+    <MantineProvider theme={theme} defaultColorScheme="dark">
       <RouterProvider router={router} />
     </MantineProvider>
   </>
