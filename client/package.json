@@ -16,13 +16,22 @@
     "@mantine/hooks": "^7.3.2",
     "@modulz/radix-icons": "^4.0.0",
     "@tabler/icons-react": "^2.44.0",
+    "@types/react-katex": "^3.0.4",
     "@types/react-router": "^5.1.20",
+    "marked": "^11.1.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-icons": "^4.12.0",
     "react-jss": "^10.10.0",
-    "react-router-dom": "^6.21.1"
+    "react-katex": "^3.0.1",
+    "react-markdown": "^9.0.1",
+    "react-mathjax": "^1.0.1",
+    "react-router-dom": "^6.21.1",
+    "rehype-katex": "^7.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

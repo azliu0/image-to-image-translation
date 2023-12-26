@@ -1,4 +1,4 @@
-import ReactDOM from "react-dom/client";
+import * as ReactDOM from "react-dom/client";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
 import { MantineProvider, createTheme } from "@mantine/core";
@@ -33,7 +33,7 @@ const theme = createTheme({
   },
 });
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <>
     <MantineProvider theme={theme} defaultColorScheme="dark">
       <RouterProvider router={router} />

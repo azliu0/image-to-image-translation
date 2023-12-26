@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth !important;
+}
+
 .titleContainer {
   flex-direction: column;
   align-items: center;
@@ -5,12 +9,11 @@
 
 .title{
     font-size: 45px;
-    white-space: nowrap;
-    /* border: 2px solid blue; */
+    text-align: center;
+    margin-left: 1rem;
+    margin-right: 1rem;
 
-    @media screen and (max-width: 768px){
-        font-size: 35px;
-        white-space: normal;
+    @media screen and (max-width: 640px){
         text-align: center;
     }
 }
@@ -139,4 +142,30 @@
 .initiateSpin{
   transform: rotate(180deg);
   transition: transform 1s linear;
+}
+
+.markdownContainer {
+  width: 720px;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 4rem;
+}
+
+.markdownTitle {
+  font-size: 30px;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.markdownSubtitle {
+  margin-top: 1.5rem;
+  font-size: 12px;
+}
+
+.footnoteContainer {
+  margin-top: 1rem;
+}
+
+.footnote {
+  font-size: 12px;
 }

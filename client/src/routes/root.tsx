@@ -109,6 +109,14 @@ const RootPage = () => {
         <Anchor href="/gallery" className={classes.reference}>
           Gallery
         </Anchor>
+        <p className={classes.reference}> | </p>
+        <Anchor
+          href="https://github.com/azliu0/image-to-image-translation"
+          target="_blank"
+          className={classes.reference}
+        >
+          Repo
+        </Anchor>
       </Center>
       <Center>
         <Select
