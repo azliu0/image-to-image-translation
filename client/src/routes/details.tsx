@@ -3,12 +3,11 @@ import { useState, useEffect } from "react";
 import classes from "./root.module.css";
 import LightDarkButton from "../components/LightDarkButton";
 import Details from "../md/details.md";
-import Markdown from "../components/MarkdownRender";
 import { MarkdownFile, parseMD } from "../utils/MarkdownUtils";
-import { FaCalendarAlt } from "react-icons/fa";
-import { IoIosTime } from "react-icons/io";
+import MarkdownFormat from "../components/MarkdownFormat";
 
 const DetailsPage = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const [author, setAuthor] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [date, setDate] = useState<string>("");
@@ -25,6 +24,7 @@ const DetailsPage = () => {
         setTime(parsed.time);
         setTitle(parsed.title);
         setDetailsText(parsed.content);
+        setLoading(false);
       });
   }, []);
 
@@ -49,30 +49,17 @@ const DetailsPage = () => {
       </Center>
       <Center>
         <Flex direction={"column"} className={classes.markdownContainer}>
-          <div className={classes.markdownTitle}>{title}</div>
-          <div className={classes.markdownSubtitle}>
-            <FaCalendarAlt />
-            {` ${date} `}
-            <IoIosTime />
-            {` ${time}`}
-          </div>
-          <Markdown children={detailsText} />
-
-          <Divider />
-
-          <Flex className={classes.footnoteContainer} direction={"column"}>
-            <Anchor href={"./src/md/details.md"} className={classes.footnote}>
-              Read Markdown
-            </Anchor>
-            <Anchor
-              onClick={() =>
-                window.scroll({ top: 0, left: 0, behavior: "smooth" })
-              }
-              className={classes.footnote}
-            >
-              Back to Top
-            </Anchor>
-          </Flex>
+          {!loading ? (
+            <MarkdownFormat
+              author={author}
+              title={title}
+              date={date}
+              time={time}
+              content={detailsText}
+            />
+          ) : (
+            <div>Loading...</div>
+          )}
         </Flex>
       </Center>
     </>
