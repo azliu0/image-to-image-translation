@@ -11,6 +11,7 @@ const MarkdownFormat = ({
   date,
   time,
   content,
+  absMDLink,
 }: MarkdownFile) => {
   return (
     <>
@@ -28,7 +29,7 @@ const MarkdownFormat = ({
       <Divider />
 
       <Flex className={classes.footnoteContainer} direction={"column"}>
-        <Anchor href={"./src/md/details.md"} className={classes.footnote}>
+        <Anchor href={absMDLink} className={classes.footnote}>
           Read Markdown
         </Anchor>
         <Anchor

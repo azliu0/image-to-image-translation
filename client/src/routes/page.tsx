@@ -1,13 +1,13 @@
 import AnimatedPage from "../components/AnimatedPage";
-import { Flex, Center, Anchor, Divider } from "@mantine/core";
+import { Flex, Center, Anchor } from "@mantine/core";
 import { useState, useEffect } from "react";
 import classes from "./root.module.css";
 import LightDarkButton from "../components/LightDarkButton";
-import Details from "../md/details.md";
 import { MarkdownFile, parseMD } from "../utils/MarkdownUtils";
 import MarkdownFormat from "../components/MarkdownFormat";
+import { PageInterface } from "../App";
 
-const DetailsPage = () => {
+const Page = ({ mdPageLink, displayTitle }: PageInterface) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [author, setAuthor] = useState<string>("");
   const [title, setTitle] = useState<string>("");
@@ -15,8 +15,16 @@ const DetailsPage = () => {
   const [time, setTime] = useState<string>("");
   const [detailsText, setDetailsText] = useState<string>("");
 
+  const getAbsMDLink = (mdPageLink: string): string => {
+    // mdPageLink: ../md/{name}.md
+    // absMDLink: ./src/md/{name}.md
+    return "./src" + mdPageLink.slice(2);
+  };
+
   useEffect(() => {
-    fetch(Details)
+    import(mdPageLink)
+      .then((mdPageLinkModule) => mdPageLinkModule.default)
+      .then((mdPageFile) => fetch(mdPageFile))
       .then((res) => res.text())
       .then((text: string) => parseMD(text))
       .then((parsed: MarkdownFile) => {
@@ -41,7 +49,7 @@ const DetailsPage = () => {
             <a className={classes.noUnderline} href="/">
               Image-to-Image Translation
             </a>{" "}
-            — Details
+            — {displayTitle}
           </div>
         </Flex>
         <Center className={classes.referencesContainer}>
@@ -58,6 +66,7 @@ const DetailsPage = () => {
                 date={date}
                 time={time}
                 content={detailsText}
+                absMDLink={getAbsMDLink(mdPageLink)}
               />
             ) : (
               <div>Loading...</div>
@@ -69,4 +78,4 @@ const DetailsPage = () => {
   );
 };
 
-export default DetailsPage;
+export default Page;

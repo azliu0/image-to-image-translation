@@ -4,6 +4,7 @@ export interface MarkdownFile {
   date: string;
   time: string;
   content: string;
+  absMDLink: string;
 }
 
 export const parseMD = (text: string): Promise<MarkdownFile> => {
@@ -51,5 +52,6 @@ export const parseMD = (text: string): Promise<MarkdownFile> => {
     date,
     time,
     content,
+    absMDLink: "",
   });
 };

@@ -1,9 +1,8 @@
 ---
-title: My Second Post, Yo!
+title: Gallery
 author: Jack Chen and Andrew Liu
-date: December 25, 2023
+date: January 1, 2023
+time: 1 min
 ---
-
-# Gallery
 
 *It's a beautiful thing.*

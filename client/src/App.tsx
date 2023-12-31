@@ -2,9 +2,17 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
 import RootPage from "./routes/root";
-import DetailsPage from "./routes/details";
-import GalleryPage from "./routes/gallery";
+import Page from "./routes/page";
 import NotFoundPage from "./routes/404";
+export interface PageInterface {
+  mdPageLink: string;
+  displayTitle: string;
+}
+
+const pages: PageInterface[] = [
+  { mdPageLink: "../md/details.md", displayTitle: "Details" },
+  { mdPageLink: "../md/gallery.md", displayTitle: "Gallery" },
+];
 
 const App = () => {
   const location = useLocation();
@@ -14,8 +22,18 @@ const App = () => {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route index element={<RootPage />} />
-          <Route path="/details" element={<DetailsPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
+          {pages.map((page, idx) => (
+            <Route
+              key={idx}
+              path={`/${page.displayTitle.toLowerCase()}`}
+              element={
+                <Page
+                  mdPageLink={page.mdPageLink}
+                  displayTitle={page.displayTitle}
+                />
+              }
+            />
+          ))}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>

@@ -23,7 +23,6 @@ import {
   FileWithPath,
 } from "@mantine/dropzone";
 import classes from "./root.module.css";
-import { useEffect } from "react";
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 interface FullModel {
@@ -69,13 +68,13 @@ const RootPage = () => {
     else return "#ffffff";
   }
 
-  const blah = document.getElementById("blah") as HTMLImageElement;
-  function readURL(files: FileWithPath[]) {
-    if (files) {
-      const convertedFile = files as Blob;
-      blah.src = URL.createObjectURL(files);
-    }
-  }
+  // const blah = document.getElementById("blah") as HTMLImageElement;
+  // function readURL(files: FileWithPath[]) {
+  //   if (files) {
+  //     const convertedFile = files as Blob;
+  //     blah.src = URL.createObjectURL(files);
+  //   }
+  // }
 
   const handleMouseEnterRight = () => {
     setIsHoveredRight(true);
