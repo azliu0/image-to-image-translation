@@ -1,5 +1,5 @@
 ---
-title: How to use this website
+title: About this website
 author: Jack Chen and Andrew Liu
 date: December 25, 2023
 time: 10 min
@@ -27,7 +27,7 @@ Dataset details...
 
 Training details...
 
-## Review of literature
+## Summary of math
 
 Coming into this project, we wanted to have a solid understanding of the math underlying the model. We reproduce some of the things we learned here. 
 
@@ -44,3 +44,16 @@ Eventually, we will publish some details here about the tech stack we used to cr
 We are both very interesting in generative modelling and excited about its potential impact for the world. We are grateful to have gained some experience understanding these models at a deeper level, in addition to the exercise in web development in creating this website. 
 
 ## References
+
+[1] Brooks et al. ["InstructPix2Pix: Learning to Follow Image Editing Instructions"](https://arxiv.org/abs/2211.09800) (2022). 
+
+[2] Rombach et al. ["High-Resolution Image Synthesis with Latent Diffusion Models"](https://arxiv.org/abs/2112.10752) (2021).
+
+[3] Brown et al. ["Language Models are Few-Shot Learners"](https://arxiv.org/abs/2005.14165) (2020).
+
+[4] Ho et al. ["Denoising Diffusion Probabilistic Models"](https://arxiv.org/abs/2006.11239) (2020).
+
+[5] Song et al. ["Denoising Diffusion Implicit Models"](https://arxiv.org/abs/2010.02502) (2020).
+
+[6] Weng, Lilian. ["What are diffusion models?"](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/) Lil’Log (2021).
+
