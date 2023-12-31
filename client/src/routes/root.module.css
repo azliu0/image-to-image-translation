@@ -164,6 +164,7 @@ html {
 
 .markdownContent {
   margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .markdownContent a:link {
