@@ -1,3 +1,4 @@
+import AnimatedPage from "../components/AnimatedPage";
 import { useState } from "react";
 import LightDarkButton from "../components/LightDarkButton";
 import {
@@ -86,84 +87,121 @@ const RootPage = () => {
 
   return (
     <>
-      <Flex justify={"end"} className={classes.togglebtn}>
-        <LightDarkButton />
-      </Flex>
+      <AnimatedPage>
+        <Flex justify={"end"} className={classes.togglebtn}>
+          <LightDarkButton />
+        </Flex>
 
-      <Flex className={classes.titleContainer}>
-        <div className={classes.title}>
-          <a className={classes.noUnderline} href="/">
-            Image-to-Image Translation
-          </a>{" "}
-        </div>
-        <div className={classes.subtitle}>
-          Web Visualizer and Implementation of the Stable-Diffusion based
-          Pix2Pix Image-to-Image Translation model
-        </div>
-      </Flex>
-      <Center className={classes.referencesContainer}>
-        <Anchor href="/details" className={classes.reference}>
-          Details
-        </Anchor>
-        <p className={classes.reference}> | </p>
-        <Anchor href="/gallery" className={classes.reference}>
-          Gallery
-        </Anchor>
-        <p className={classes.reference}> | </p>
-        <Anchor
-          href="https://github.com/azliu0/image-to-image-translation"
-          target="_blank"
-          className={classes.reference}
-        >
-          Repo
-        </Anchor>
-      </Center>
-      <Center>
-        <Select
-          label="Select a model..."
-          placeholder="Select a model"
-          data={models}
-          value={model}
-          onChange={setModel}
-          className={classes.modelSelection}
-        />
-      </Center>
-      <Flex justify="center" gap={30} wrap="wrap">
-        <Dropzone
-          onDrop={(files) => console.log("accepted files", files)}
-          onReject={(files) => console.log("rejected files", files)}
-          maxSize={5 * 1024 ** 2}
-          accept={IMAGE_MIME_TYPE}
-          className={classes.dropzone}
-          h={500}
-          w={500}
-        >
-          <Group
-            justify="center"
-            gap="xl"
-            style={{ pointerEvents: "none", width: 366 }}
+        <Flex className={classes.titleContainer}>
+          <div className={classes.title}>
+            <a className={classes.noUnderline} href="/">
+              Image-to-Image Translation
+            </a>{" "}
+          </div>
+          <div className={classes.subtitle}>
+            Web Visualizer and Implementation of the Stable-Diffusion based
+            Pix2Pix Image-to-Image Translation model
+          </div>
+        </Flex>
+        <Center className={classes.referencesContainer}>
+          <Anchor href="/details" className={classes.reference}>
+            Details
+          </Anchor>
+          <p className={classes.reference}> | </p>
+          <Anchor href="/gallery" className={classes.reference}>
+            Gallery
+          </Anchor>
+          <p className={classes.reference}> | </p>
+          <Anchor
+            href="https://github.com/azliu0/image-to-image-translation"
+            target="_blank"
+            className={classes.reference}
           >
-            <Dropzone.Accept>
-              <IconUpload
-                style={{
-                  width: rem(52),
-                  height: rem(52),
-                  color: "var(--mantine-color-blue-6)",
-                }}
-                stroke={1.5}
-              />
-            </Dropzone.Accept>
-            <Dropzone.Reject>
-              <IconX
-                style={{
-                  width: rem(52),
-                  height: rem(52),
-                  color: "var(--mantine-color-red-6)",
-                }}
-                stroke={1.5}
-              />
-            </Dropzone.Reject>
-            <Dropzone.Idle>
+            Repo
+          </Anchor>
+        </Center>
+        <Center>
+          <Select
+            label="Select a model..."
+            placeholder="Select a model"
+            data={models}
+            value={model}
+            onChange={setModel}
+            className={classes.modelSelection}
+          />
+        </Center>
+        <Flex justify="center" gap={30} wrap="wrap">
+          <Dropzone
+            onDrop={(files) => console.log("accepted files", files)}
+            onReject={(files) => console.log("rejected files", files)}
+            maxSize={5 * 1024 ** 2}
+            accept={IMAGE_MIME_TYPE}
+            className={classes.dropzone}
+            h={500}
+            w={500}
+          >
+            <Group
+              justify="center"
+              gap="xl"
+              style={{ pointerEvents: "none", width: 366 }}
+            >
+              <Dropzone.Accept>
+                <IconUpload
+                  style={{
+                    width: rem(52),
+                    height: rem(52),
+                    color: "var(--mantine-color-blue-6)",
+                  }}
+                  stroke={1.5}
+                />
+              </Dropzone.Accept>
+              <Dropzone.Reject>
+                <IconX
+                  style={{
+                    width: rem(52),
+                    height: rem(52),
+                    color: "var(--mantine-color-red-6)",
+                  }}
+                  stroke={1.5}
+                />
+              </Dropzone.Reject>
+              <Dropzone.Idle>
+                <IconPhoto
+                  style={{
+                    width: rem(52),
+                    height: rem(52),
+                    color: "var(--mantine-color-dimmed)",
+                  }}
+                  stroke={1.5}
+                />
+              </Dropzone.Idle>
+
+              <div>
+                <img id="blah"></img>
+                <Text size="xl" inline>
+                  Drag your starting image here or click to select an image
+                </Text>
+                <Text size="sm" c="dimmed" inline mt={7}>
+                  Attach a starting image. See the details page for guidance
+                  about what images work best!
+                </Text>
+              </div>
+            </Group>
+          </Dropzone>
+          <div
+            onMouseEnter={handleMouseEnterRight}
+            onMouseLeave={handleMouseLeaveRight}
+            className={classes.uploadBox}
+            style={{
+              backgroundColor: isHoveredRight
+                ? getHoverColor(useMantineTheme())
+                : getBackgroundColor(useMantineTheme()),
+              borderColor: getBorderColor(useMantineTheme()),
+              width: 500,
+              height: 500,
+            }}
+          >
+            <Center className={classes.uploadBoxRightChild}>
               <IconPhoto
                 style={{
                   width: rem(52),
@@ -172,60 +210,25 @@ const RootPage = () => {
                 }}
                 stroke={1.5}
               />
-            </Dropzone.Idle>
-
-            <div>
-              <img id="blah"></img>
-              <Text size="xl" inline>
-                Drag your starting image here or click to select an image
-              </Text>
-              <Text size="sm" c="dimmed" inline mt={7}>
-                Attach a starting image. See the details page for guidance about
-                what images work best!
-              </Text>
-            </div>
-          </Group>
-        </Dropzone>
-        <div
-          onMouseEnter={handleMouseEnterRight}
-          onMouseLeave={handleMouseLeaveRight}
-          className={classes.uploadBox}
-          style={{
-            backgroundColor: isHoveredRight
-              ? getHoverColor(useMantineTheme())
-              : getBackgroundColor(useMantineTheme()),
-            borderColor: getBorderColor(useMantineTheme()),
-            width: 500,
-            height: 500,
-          }}
-        >
-          <Center className={classes.uploadBoxRightChild}>
-            <IconPhoto
-              style={{
-                width: rem(52),
-                height: rem(52),
-                color: "var(--mantine-color-dimmed)",
-              }}
-              stroke={1.5}
-            />
-          </Center>
-          <img id="blah"></img>
-          <Text size="xl" inline>
-            Your generated image will appear here!
-          </Text>
-        </div>
-      </Flex>
-      <Center>
-        <TextInput
-          label="Generation Prompt:"
-          placeholder="Input Prompt"
-          withAsterisk
-          className={classes.textInput}
-        />
-      </Center>
-      <Center>
-        <Button className={classes.genButton}>Generate</Button>
-      </Center>
+            </Center>
+            <img id="blah"></img>
+            <Text size="xl" inline>
+              Your generated image will appear here!
+            </Text>
+          </div>
+        </Flex>
+        <Center>
+          <TextInput
+            label="Generation Prompt:"
+            placeholder="Input Prompt"
+            withAsterisk
+            className={classes.textInput}
+          />
+        </Center>
+        <Center>
+          <Button className={classes.genButton}>Generate</Button>
+        </Center>
+      </AnimatedPage>
     </>
   );
 };

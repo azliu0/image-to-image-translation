@@ -2,27 +2,8 @@ import * as ReactDOM from "react-dom/client";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
 import { MantineProvider, createTheme } from "@mantine/core";
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-  RouterProvider,
-} from "react-router-dom";
-
-import RootPage from "./routes/root";
-import DetailsPage from "./routes/details";
-import GalleryPage from "./routes/gallery";
-import NotFoundPage from "./routes/404";
-
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route errorElement={<NotFoundPage />}>
-      <Route index path="/" element={<RootPage />} />
-      <Route path="/details" element={<DetailsPage />} />
-      <Route path="/gallery" element={<GalleryPage />} />
-    </Route>
-  )
-);
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import App from "./App";
 
 const theme = createTheme({
   fontFamily:
@@ -36,7 +17,11 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <>
     <MantineProvider theme={theme} defaultColorScheme="dark">
-      <RouterProvider router={router} />
+      <Router>
+        <Routes>
+          <Route path="*" element={<App />} />
+        </Routes>
+      </Router>
     </MantineProvider>
   </>
 );
