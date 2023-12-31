@@ -9,7 +9,7 @@ export interface PageInterface {
   displayTitle: string;
 }
 
-const pages: PageInterface[] = [
+const pages: Array<PageInterface> = [
   { mdPageLink: "../md/details.md", displayTitle: "Details" },
   { mdPageLink: "../md/gallery.md", displayTitle: "Gallery" },
 ];
