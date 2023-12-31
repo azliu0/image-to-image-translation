@@ -162,6 +162,22 @@ html {
   font-size: 12px;
 }
 
+.markdownContent {
+  margin-top: 1rem;
+}
+
+.markdownContent a:link {
+  color: var(--mantine-color-gray-5);
+}
+
+.markdownContent a:visited {
+  color: var(--mantine-color-gray-5);
+}
+
+.markdownContent a:hover {
+  color: var(--mantine-color-gray-6);
+}
+
 .footnoteContainer {
   margin-top: 1rem;
 }

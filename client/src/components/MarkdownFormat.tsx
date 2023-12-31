@@ -21,7 +21,9 @@ const MarkdownFormat = ({
         <IoIosTime />
         {` ${time}`}
       </div>
-      <Markdown children={content} />
+      <div className={classes.markdownContent}>
+        <Markdown children={content} />
+      </div>
 
       <Divider />
 
