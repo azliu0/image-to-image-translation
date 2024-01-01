@@ -31,7 +31,7 @@ Training details...
 
 Coming into this project, we wanted to have a solid understanding of the math underlying the model. We reproduce some of the things we learned here. Since we had some background knowledge, we'll only rigorously rederive results that we learned or found very interesting.
 
-### 1. DDPM Speedrun
+### 1. DDPM
 
 We begin with DDPMs [(Ho et al. 2020)](https://arxiv.org/abs/2006.11239). In these diffusion models, we noise images sampled from distribution $q(x)$ through the *forward process*, defined via
 
@@ -64,18 +64,18 @@ $$
 where $$\varepsilon_t$$ is the noise added to produce $$x_t$$ from $$x_0$$. This quantity is relevant because it can be shown that optimizing the [variational lower bound](https://en.wikipedia.org/wiki/Evidence_lower_bound) is equivalent to minimizing
 
 $$
-L = \mathbb{E}_{x_0, \varepsilon, t}[k\lVert \tilde{\mu}_t(x_t,x_0) - \mu_{\theta}(x_t,t)\rVert^2].
+L = \mathbb{E}_{x_0, \varepsilon, t}\left[\frac{1}{2\lVert \Sigma_{\theta}(x_t,t)\rVert_2^2}\lVert \tilde{\mu}_t(x_t,x_0) - \mu_{\theta}(x_t,t)\rVert^2\right].
 $$
 
-where $$\mu_{\theta}(x_t,t)$$ is the backwards mean predicted by our model, and $$k$$ is a constant that depends on some important factors. [(Ho et al. 2020)](https://arxiv.org/abs/2006.11239) showed that this constant is not super important, so eventually reduced the loss function to 
+where $$\mu_{\theta}(x_t,t)$$ and $$\Sigma_{\theta}(x_t,t)$$ is the backwards mean and variance predicted by our model. [(Ho et al. 2020)](https://arxiv.org/abs/2006.11239) showed that ignoring the constant in front can produce better results for training, so eventually reduced the loss function to 
 
 $$
 L = \mathbb{E}_{x_0, \varepsilon, t}[\lVert \varepsilon_t - \varepsilon_{\theta}(x_t,t)\rVert^2].
 $$
 
-The full derivation for this fact is recreated [here](https://azliu0.github.io/mit-notes/6.7900/6_7900_Notes.pdf). The importance of this fact is that training DDPM models boils down to sampling random images at random timesteps, and having a model (typically a UNet) learn to predict the the noise added at timestep $$t$$. 
+The full derivation of all the facts leading up to this point can be found [here](https://azliu0.github.io/mit-notes/6.7900/6_7900_Notes.pdf). The importance of this fact is that training DDPM models boils down to sampling random images at random timesteps, and having a model (typically a UNet) learn to predict the the noise added at timestep $$t$$. 
 
-Some important training details that we found confusing: 
+Some important training details: 
 1. the input of our UNet is an image $$x_t$$, generated from $$x_0$$ using the distribution $$q(x_t|x_0)$$. the output of our UNet is the noise used to generate $$x_t$$, $$\varepsilon_{\theta}(x_t,t)$$.
 
 2. this noise is sampled from $$\mathcal{N}(0,1)$$, per the [reparamaterization trick](https://en.wikipedia.org/wiki/Variational_autoencoder#Reparameterization). this noise represents normalized quantity of noise added from $$x_0$$ to $$x_t$$, **not** from $$x_{t-1}$$ to $$x_t$$. in other words, this noise corresponds to the forwards distribution $$q(x_t|x_0)$$, and not $$q(x_t|x_{t-1})$$.
@@ -84,9 +84,9 @@ Some important training details that we found confusing:
 
 4. a concrete demonstration of this fact is the way that we simulate the backwards process once we have trained our UNet. We must make $$T$$ calls to the UNet to go from pure noise to the original data distribution (more accurately, our approximation of the distribution). In each of these $$T$$ calls, although the UNet estimates noise from timestep $$0$$ to the current timestep, we cannot jump directly to the beginning, because we do not know $$p(x_0|x_t)$$ as a function of this noise. thus, although we have a shortcut for the forwards process, there is no equivalent shortcut for the backwards process, and so inference is quite expensive.
 
-### DDIM
+### 2. DDIM
 
-This training 
+Next, we turn to DDIMs [(Song et al. 2020)](https://arxiv.org/abs/2010.02502), since this variation on DDPMs is an important component of the Stable Diffusion models.
 
 ## Website details
 
