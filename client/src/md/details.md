@@ -100,7 +100,12 @@ $$
 \Lambda \equiv \Sigma^{-1} = \begin{pmatrix}\Lambda_{aa} & \Lambda_{ab} \\ \Lambda_{ba} & \Lambda_{bb}\end{pmatrix}
 $$
 
-be the precision matrix corresponding to $$x$$. The first question we will focus on is how to compute the marginal
+be the precision matrix corresponding to $$x$$. 
+
+<a id="2.1"></a>
+#### 2.1. Computing marginal gaussian from joint gaussian
+
+The first question we will focus on is how to compute the marginal
 
 $$
 p(x_a) = \int p(x_a,x_b) \mathrm{d}x_b.
@@ -165,7 +170,7 @@ $$
 -\frac{1}{2}x_a^T(\Lambda_{aa}-\Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})x_a + x_a^T(\Lambda_{aa} - \Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})\mu_a + \text{const.},
 $$
 
-so [comparing coefficients](#gaussian) gives 
+so [matching coefficients](#gaussian) gives 
 
 $$
 \text{Cov}[p(x_a)] = (\Lambda_{aa} - \Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})^{-1},
@@ -179,6 +184,56 @@ $$
 
 Lastly, we note that $$\text{Cov}[p(x_a)]$$ is actually the inverse [Schur complement](https://en.wikipedia.org/wiki/Schur_complement) of block $$\Sigma_{aa}$$, so the result is more cleanly written $$\text{Cov}[p(x_a)] = \Sigma_{aa}$$.
 
+Note how intuitively nice this result is. It's exactly what we expect, even if it takes some work to prove it rigorously. 
+
+#### 2.2. Computing marginal gaussian given other other marginal and conditional
+
+The next question we will focus on is computing the marginal $$p(y)$$ given 
+
+$$
+p(x) = \mathcal{N}(x; \mu, \Lambda^{-1}) \qquad p(y|x) = \mathcal{N}(y; Ax+b,L^{-1}).
+$$
+
+This form seems a little contrived but becomes useful when we discuss [DDIMs](#ddim).
+
+The first observation is that the joint $$p(x,y)$$ is Gaussian, since $$\mathbb{P}[x=x_0,y=y_0] = \mathbb{P}[x=x_0]\cdot \mathbb{P}[y=y_0|x=x_0]$$ for all $$(x_0,y_0)$$. Note that it is not true in general that the product of two Gaussian random variables is Gaussian; it works out here because the pdf of the joint distribution at every point is equal to the product of the pdfs of the marginal Gaussians, and the product of Gaussian pdfs is always Gaussian. 
+
+Thus, if we can find mean and variance of $$p(x,y)$$, we can use our results from [2.1](#2.1) to obtain the distribution of the other conditional. 
+
+We have 
+
+$$
+\begin{align*}
+\ln p(x,y) &= -\frac{1}{2}(x-\mu)^T\Lambda (x-\mu) - \frac{1}{2}(y-Ax-b)^TL(y-Ax-b) + \text{const} \\
+&= -\frac{1}{2}\left(x^T\Lambda x + x^TA^TLAx + y^TLy - y^TLA - x^TA^TLy \right. \\
+&\qquad\qquad \left. - 2x^T\Lambda \mu + 2x^TA^TLb - 2y^TLb\right) + \text{const} \\
+&= -\frac{1}{2}\begin{pmatrix}x \\ y\end{pmatrix}^T\begin{pmatrix}\Lambda + A^TLA & -A^TL \\ -LA & L\end{pmatrix}\begin{pmatrix}x \\ y\end{pmatrix} + \begin{pmatrix}x \\ y\end{pmatrix}^T\begin{pmatrix}\Lambda\mu - A^TLb \\ Lb\end{pmatrix} + \text{const}.
+\end{align*}
+$$
+
+[Matching coefficients](#gaussian), we have 
+
+$$
+\text{Cov}(x,y) = \begin{pmatrix}\Lambda + A^TLA & -A^TL \\ -LA & L\end{pmatrix}^{-1} = \begin{pmatrix}\Lambda^{-1} & \Lambda^{-1}A^T \\ A\Lambda^{-1} & L^{-1} + A\Lambda^{-1}A^T\end{pmatrix}.
+$$
+
+and 
+
+$$
+\mathbb{E}(x,y) = \text{Cov}(x,y)\begin{pmatrix}\Lambda\mu -A^TLb \\ Lb\end{pmatrix} = \begin{pmatrix}\mu \\ A\mu + B\end{pmatrix}.
+$$
+
+Finally, using [2.1](#2.1), 
+
+$$
+\mathbb{E}(y) = A\mu + b \qquad \text{Cov}(y) = L^{-1} + A\Lambda^{-1}A^T.
+$$
+
+With some more work, we could also extract the other conditional, but we won't need this result. 
+
+Like our result in [2.1](#2.1), our final expression is nice because we can understand it intuitively. We have $$y$$ sampled from a distribution with mean $$f(x)$$, where $$f$$ is linear; therefore, the fact that $$\mathbb{E}[y] = f(\mathbb{E}(x))$$ makes intuitive sense. Further, since we have $$f(x) = Ax+b$$, we expect $$\text{Cov}(f(x)) = A^T\text{Cov(x)}A$$. The only "dependence" that $$y$$ has on $$x$$ is through their means; $$\text{Cov(y|x)} = L^{-1}$$ is a source of noise that is essentially independent from the noise associated with $$x$$, so through linearity of variance it makes intuitive sense that $$\text{Cov}(y) = A^T\text{Cov(x)}A + L^{-1}$$.
+
+<a id="ddim"></a>
 ### 3. DDIM
 
 Next, we turn to DDIMs [(Song et al. 2020)](https://arxiv.org/abs/2010.02502), since this variation on DDPMs is an important component of the Stable Diffusion models. A key motivation for these models is the fact referenced above that inference, i.e., simulating the backwards diffusion process, is quite expensive.
