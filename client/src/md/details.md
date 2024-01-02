@@ -84,9 +84,71 @@ Some important training details:
 
 4. a concrete demonstration of this fact is the way that we simulate the backwards process once we have trained our UNet. We must make $$T$$ calls to the UNet to go from pure noise to the original data distribution (more accurately, our approximation of the distribution). In each of these $$T$$ calls, although the UNet estimates noise from timestep $$0$$ to the current timestep, we cannot jump directly to the beginning, because we do not know $$p(x_0|x_t)$$ as a function of this noise. thus, although we have a shortcut for the forwards process, there is no equivalent shortcut for the backwards process, and so inference is quite expensive.
 
-### 2. DDIM
+### 2. Multivariate Gaussians
 
-Next, we turn to DDIMs [(Song et al. 2020)](https://arxiv.org/abs/2010.02502), since this variation on DDPMs is an important component of the Stable Diffusion models.
+Before continuing, we first derive some useful identities for multivariate Gaussians that will be used later. Many of these identities and derivations can be found in Pattern Recognition and Machine Learning [(Bishop 2006)](https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf). They are recreated here for completeness and for our own learning. 
+
+Suppose we represent Gaussian $$p(x)$$ as some jointly defined distribution $$p(x_a,x_b)$$, where $$x_a$$ and $$x_b$$ arbitrarily partition the dimensions in $$x$$. $$x_a$$ and $$x_b$$ are distributions in their own right, with means and covariances; write
+
+$$
+x = \begin{pmatrix}x_a \\ x_b\end{pmatrix}\qquad \mu = \begin{pmatrix}\mu_a \\ \mu_b\end{pmatrix}\qquad \Sigma = \begin{pmatrix}\Sigma_{aa} & \Sigma_{ab} \\ \Sigma_{ba} & \Sigma_{bb}\end{pmatrix}
+$$
+
+Also, let 
+
+$$
+\Lambda = \begin{pmatrix}\Lambda_{aa} & \Lambda_{ab} \\ \Lambda_{ba} & \Lambda_{bb}\end{pmatrix}
+$$
+
+be the precision matrix corresponding to $$x$$. The first question we will focus on is how to compute the marginal
+
+$$
+p(x_a) = \int p(x_a,x_b) \mathrm{d}x_b.
+$$
+
+The purpose of decomposing everything into $$x_a$$ and $$x_b$$ components is that we may now write
+
+$$
+\begin{align*}
+-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) &= -\frac{1}{2}(x_a-\mu_a)^T\Lambda_{aa}(x_a-\mu_a)-\frac{1}{2}(x_a-\mu_a)^T\Lambda_{ab}(x_b-\mu_b) \\
+&\quad -\frac{1}{2}(x_b-\mu_b)^T\Lambda_{ba}(x_a-\mu_a)-\frac{1}{2}(x_b-\mu_b)^T\Lambda_{bb}(x_b-\mu_b).
+\end{align*}
+$$
+
+Our strategy will be to isolate the integrating variable $$x_b$$. Collecting all terms in the above that have $$x_b$$:
+
+$$
+-\frac{1}{2}x_b^T\Lambda_{bb}x_b + x_b^T(\Lambda_{bb}\mu_b - \Lambda_{ba}x_a + \Lambda_{ba}\mu_a),
+$$
+
+where we use the fact that $$\Lambda_{ab} = \Lambda_{ba}^T$$ to combine like terms. After completing the square, our integral becomes 
+
+$$
+\begin{align*}
+f(x_a) \cdot \int & \exp\biggl\{-\frac{1}{2}(x_b-\Lambda_{bb}^{-1}(\Lambda_{bb}\mu_b - \Lambda_{ba}x_a + \Lambda_{ba}\mu_a))^T\\
+&\quad \cdot \Lambda_{bb}(x_b-\Lambda_{bb}^{-1}(\Lambda_{bb}\mu_b - \Lambda_{ba}x_a + \Lambda_{ba}\mu_a))\biggr\}\mathrm{d}x_b,
+\end{align*}
+$$
+
+where $$f(x_a)$$ is some function of $$x_a$$ independent of $$x_b$$. There are two key observations here: 
+- $$f(x_a)$$ is quadratic in $$x_a$$, and (as we will show) is specifically a quadratic form in $$x_a$$
+- the integrand is just an unnormalized Gaussian, so it will integrate to the inverse normalization factor. in this case, this normalization factor is only a function of $$\det\Lambda_{bb}$$, which is not a function of $$x_a$$
+
+Together, these two observations imply that $$p(x_a)$$ is itself Gaussian, and thus we can ignore that constant that we get from the integral. Instead, given that the distribution is Gaussian, we can cherry pick $$\mu_a$$ and $$\Sigma_a$$ by comparing coefficients with 
+
+$$
+-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) = -\frac{1}{2}x^T\Sigma^{-1}x + x^T\Sigma^{-1}\mu + \text{const},
+$$
+
+since all Gaussians have this quadratic form (the alternative would be to manually expand the integral and compute everything, but this is much easier). 
+
+
+
+### 3. DDIM
+
+Next, we turn to DDIMs [(Song et al. 2020)](https://arxiv.org/abs/2010.02502), since this variation on DDPMs is an important component of the Stable Diffusion models. A key motivation for these models is the fact referenced above that inference, i.e., simulating the backwards diffusion process, is quite expensive.
+
+Before looking at the specific 
 
 ## Website details
 
@@ -119,4 +181,6 @@ This was a very fulfulling winter break project for us, since we are both very i
 [5] Song et al. ["Denoising Diffusion Implicit Models"](https://arxiv.org/abs/2010.02502) (2020).
 
 [6] Weng, Lilian. ["What are diffusion models?"](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/) Lil’Log (2021).
+
+[7] Bishop, Christopher ["Pattern Recognition and Machine Learning"](https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf) (2006).
 
