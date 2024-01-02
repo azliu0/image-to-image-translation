@@ -5,4 +5,6 @@ date: January 1, 2023
 time: 1 min
 ---
 
-*It's a beautiful thing.*
+*Kim Chae-won*
+
+<img src="images/chaewon.png" alt="chaewon" width="300"/>

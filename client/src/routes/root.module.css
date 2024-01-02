@@ -160,6 +160,8 @@ html {
 .markdownSubtitle {
   margin-top: 1.5rem;
   font-size: 12px;
+  display: flex;
+  align-items: center;
 }
 
 .markdownContent {

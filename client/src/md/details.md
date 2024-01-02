@@ -91,13 +91,13 @@ Before continuing, we first derive some useful identities for multivariate Gauss
 Suppose we represent Gaussian $$p(x)$$ as some jointly defined distribution $$p(x_a,x_b)$$, where $$x_a$$ and $$x_b$$ arbitrarily partition the dimensions in $$x$$. $$x_a$$ and $$x_b$$ are distributions in their own right, with means and covariances; write
 
 $$
-x = \begin{pmatrix}x_a \\ x_b\end{pmatrix}\qquad \mu = \begin{pmatrix}\mu_a \\ \mu_b\end{pmatrix}\qquad \Sigma = \begin{pmatrix}\Sigma_{aa} & \Sigma_{ab} \\ \Sigma_{ba} & \Sigma_{bb}\end{pmatrix}
+x = \begin{pmatrix}x_a \\ x_b\end{pmatrix}\qquad \mu = \begin{pmatrix}\mu_a \\ \mu_b\end{pmatrix}\qquad \Sigma = \begin{pmatrix}\Sigma_{aa} & \Sigma_{ab} \\ \Sigma_{ba} & \Sigma_{bb}\end{pmatrix}.
 $$
 
 Also, let 
 
 $$
-\Lambda = \begin{pmatrix}\Lambda_{aa} & \Lambda_{ab} \\ \Lambda_{ba} & \Lambda_{bb}\end{pmatrix}
+\Lambda \equiv \Sigma^{-1} = \begin{pmatrix}\Lambda_{aa} & \Lambda_{ab} \\ \Lambda_{ba} & \Lambda_{bb}\end{pmatrix}
 $$
 
 be the precision matrix corresponding to $$x$$. The first question we will focus on is how to compute the marginal
@@ -107,7 +107,7 @@ p(x_a) = \int p(x_a,x_b) \mathrm{d}x_b.
 $$
 
 The purpose of decomposing everything into $$x_a$$ and $$x_b$$ components is that we may now write
-
+<a id="og-expansion"></a>
 $$
 \begin{align*}
 -\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) &= -\frac{1}{2}(x_a-\mu_a)^T\Lambda_{aa}(x_a-\mu_a)-\frac{1}{2}(x_a-\mu_a)^T\Lambda_{ab}(x_b-\mu_b) \\
@@ -131,18 +131,53 @@ f(x_a) \cdot \int & \exp\biggl\{-\frac{1}{2}(x_b-\Lambda_{bb}^{-1}(\Lambda_{bb}\
 $$
 
 where $$f(x_a)$$ is some function of $$x_a$$ independent of $$x_b$$. There are two key observations here: 
-- $$f(x_a)$$ is quadratic in $$x_a$$, and (as we will show) is specifically a quadratic form in $$x_a$$
+- $$f(x_a)$$ is a quadratic form in $$x_a$$
 - the integrand is just an unnormalized Gaussian, so it will integrate to the inverse normalization factor. in this case, this normalization factor is only a function of $$\det\Lambda_{bb}$$, which is not a function of $$x_a$$
 
-Together, these two observations imply that $$p(x_a)$$ is itself Gaussian, and thus we can ignore that constant that we get from the integral. Instead, given that the distribution is Gaussian, we can cherry pick $$\mu_a$$ and $$\Sigma_a$$ by comparing coefficients with 
+Together, these two observations imply that $$p(x_a)$$ is itself Gaussian, and thus we can ignore the constant that we get from the integral. Instead, given that the distribution is Gaussian, we can cherry pick $$\mu_a$$ and $$\Sigma_a$$ by comparing coefficients with the general Gaussian expansion 
+<a id="gaussian"></a>
+$$
+-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) = -\frac{1}{2}x^T\Sigma^{-1}x + x^T\Sigma^{-1}\mu + \text{const}.
+$$
+
+Alternatively, we could manually expand the integral and compute everything, but comparing coefficients is much easier.
+
+The full expression for $$f(x_a)$$ has terms from our [original expansion](#og-expansion), and the leftover terms from completing the square on $$x_b$$. The terms coming from our original expansion are 
 
 $$
--\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) = -\frac{1}{2}x^T\Sigma^{-1}x + x^T\Sigma^{-1}\mu + \text{const},
+-\frac{1}{2}x_a^T\Lambda_{aa}x_a + x_a^T(\Lambda_{aa}\mu_a + \Lambda_{ab}\mu_b),
 $$
 
-since all Gaussians have this quadratic form (the alternative would be to manually expand the integral and compute everything, but this is much easier). 
+while the terms leftover from completing the square are 
 
+$$
+\begin{align*}
+&\frac{1}{2}(\Lambda_{bb}\mu_b - \Lambda_{ba}x_a + \Lambda_{ba}\mu_a)^T\Lambda_{bb}^{-1}(\Lambda_{bb}\mu_b - \Lambda_{ba}x_a + \Lambda_{ba}\mu_a)\\
+&= \frac{1}{2}(-\mu_b^T\Lambda_{ba}x_a-x_a^T\Lambda_{ba}^T\mu_b + x_a^T\Lambda_{ba}^T\Lambda_{bb}^{-1}\Lambda_{ba}x_a \\
+&\qquad - x_a^T\Lambda_{ba}^T\Lambda_{bb}^{-1}\Lambda_{ba}\mu_a-\mu_a^T\Lambda_{ba}^T\Lambda_{bb}^{-1}\Lambda_{ba}x_a) + \text{const.} \\
+&= \frac{1}{2}x_a^T\Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba}x_a + x_a^T(-\Lambda_{ab}\mu_b-\Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba}\mu_a) + \text{const.},
+\end{align*}
+$$
 
+where we combine like terms using $$\Lambda_{ab}=\Lambda_{ba}^T$$ and the fact that all individual terms are scalars, i.e., we can transpose terms freely. Combining all terms together now gives
+
+$$
+-\frac{1}{2}x_a^T(\Lambda_{aa}-\Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})x_a + x_a^T(\Lambda_{aa} - \Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})\mu_a + \text{const.},
+$$
+
+so [comparing coefficients](#gaussian) gives 
+
+$$
+\text{Cov}[p(x_a)] = (\Lambda_{aa} - \Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})^{-1},
+$$
+
+and
+
+$$
+\mathbb{E}[p(x_a)] = \text{Cov}[p(x_a)]^{-1}(\Lambda_{aa} - \Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})^{-1}\mu_a = \mu_a.
+$$
+
+Lastly, we note that $$\text{Cov}[p(x_a)]$$ is actually the inverse [Schur complement](https://en.wikipedia.org/wiki/Schur_complement) of block $$\Sigma_{aa}$$, so the result is more cleanly written $$\text{Cov}[p(x_a)] = \Sigma_{aa}$$.
 
 ### 3. DDIM
 

@@ -4,6 +4,7 @@ import classes from "../routes/root.module.css";
 import Markdown from "../components/MarkdownRender";
 import { FaCalendarAlt } from "react-icons/fa";
 import { IoIosTime } from "react-icons/io";
+import { CgProfile } from "react-icons/cg";
 
 const MarkdownFormat = ({
   title,
@@ -18,9 +19,11 @@ const MarkdownFormat = ({
       <div className={classes.markdownTitle}>{title}</div>
       <div className={classes.markdownSubtitle}>
         <FaCalendarAlt />
-        {` ${date} `}
+        {"\u00A0" + `${date}` + "\u00A0"}
         <IoIosTime />
-        {` ${time}`}
+        {"\u00A0" + `${time}` + "\u00A0"}
+        <CgProfile />
+        {"\u00A0" + `${author}` + "\u00A0"}
       </div>
       <div className={classes.markdownContent}>
         <Markdown children={content} />
