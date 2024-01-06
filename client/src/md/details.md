@@ -42,7 +42,7 @@ $$
 where $$\beta_t$$ is some noise scheduler. We'll typically see $$\beta_1 < \beta_2 < \cdots < \beta_T$$ to ensure that the final image is pure noise.
 
 Let $$\alpha_t = 1-\beta_t$$ and $$\prod_{i=1}^t \alpha_t = \overline{\alpha}_t$$. It can be shown that 
-
+<a id="forward-sampling"></a>
 $$
 q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\overline{\alpha}_t}x_0, (1-\overline{\alpha}_t)I),
 $$
@@ -231,14 +231,30 @@ $$
 
 With some more work, we could also extract the other conditional, but we won't need this result. 
 
-Like our result in [2.1](#2.1), our final expression is nice because we can understand it intuitively. We have $$y$$ sampled from a distribution with mean $$f(x)$$, where $$f$$ is linear; therefore, the fact that $$\mathbb{E}[y] = f(\mathbb{E}(x))$$ makes intuitive sense. Further, since we have $$f(x) = Ax+b$$, we expect $$\text{Cov}(f(x)) = A^T\text{Cov(x)}A$$. The only "dependence" that $$y$$ has on $$x$$ is through their means; $$\text{Cov(y|x)} = L^{-1}$$ is a source of noise that is essentially independent from the noise associated with $$x$$, so through linearity of variance it makes intuitive sense that $$\text{Cov}(y) = A^T\text{Cov(x)}A + L^{-1}$$.
+Like our result in [2.1](#2.1), this final expression is nice because it aligns reasonably with what we expect. We have $$y|x$$ sampled from a distribution with mean $$f(x)$$, where $$f$$ is linear; therefore, the fact that $$\mathbb{E}[y] = f(\mathbb{E}(x))$$ makes intuitive sense. Further, since we have $$f(x) = Ax+b$$, we expect $$\text{Cov}(f(x)) = A^T\text{Cov(x)}A$$. The only "dependence" that $$y$$ has on $$x$$ is through their means; $$\text{Cov(y|x)} = L^{-1}$$ is a source of noise that is essentially independent from the noise associated with $$x$$, so through linearity of variance it makes intuitive sense that $$\text{Cov}(y) = A^T\text{Cov(x)}A + L^{-1}$$.
 
 <a id="ddim"></a>
 ### 3. DDIM
 
 Next, we turn to DDIMs [(Song et al. 2020)](https://arxiv.org/abs/2010.02502), since this variation on DDPMs is an important component of the Stable Diffusion models. A key motivation for these models is the fact referenced above that inference, i.e., simulating the backwards diffusion process, is quite expensive.
 
-Before looking at the specific 
+This paper introduces a family of inference distributions $$\mathcal{Q}$$ paramaterized by $$\sigma$$ fixing the variance added during denoising:  
+
+$$
+q_{\sigma}(x_{t-1}|x_t,x_0) = \mathcal{N}\left(\sqrt{\overline{\alpha}_{t-1}}x_0 + \sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}\cdot \frac{x_t - \sqrt{\overline{\alpha}_t}x_0}{\sqrt{1-\overline{\alpha}_t}}, \sigma_t^2 I\right).
+$$
+
+This distribution was constructed so that forward sampling still works as expected for the purpose of training; it can be proven that $$q_{\sigma}(x_t|x_0) = \mathcal{N}(\sqrt{\overline{\alpha}_t}x_0, (1-\overline{\alpha}_t)I)$$, which is the same sampling distribution for DDPMs (see [here](#forward-sampling)). It is not true that the normal forwards process $$q(x_t|x_{t-1})$$ stays intact, and in fact $$q_{\sigma}(x_t|x_{t-1},x_0)\neq q_{\sigma}(x_t|x_{t-1})$$, hence this family of distributions is *non-Markovian*.
+
+To see why this new family of distributions intuitively captures the spirit of the backwards diffusion process derived in DDPMs, note that
+
+$$
+\frac{x_t - \sqrt{\overline{\alpha}_t}x_0}{\sqrt{1-\overline{\alpha}_t}} = \varepsilon_{t},
+$$
+
+so the two terms $$\sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}$$ (under the mean) and $$\sigma_t$$ (under actual variance) can be seen as having total noise $$\sqrt{1-\overline{\alpha}_{t-1}}$$, which matches the noise expression for the forward process, i.e., the distribution $$q(x_{t-1}|x_0)$$. The paper introduces this "splitting" of the noise factors to control the actual amount of noise that is induced during the backwards inference step. 
+
+To prove that forwards sampling from $$x_0$$ remains the same, we can use an inductive argument. At time $$T=t$$, 
 
 ## Website details
 
