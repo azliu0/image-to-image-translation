@@ -186,6 +186,7 @@ Lastly, we note that $$\text{Cov}[p(x_a)]$$ is actually the inverse [Schur compl
 
 Note how intuitively nice this result is. It's exactly what we expect, even if it takes some work to prove it rigorously. 
 
+<a id="2.2"></a>
 #### 2.2. Computing marginal gaussian given other other marginal and conditional
 
 The next question we will focus on is computing the marginal $$p(y)$$ given 
@@ -254,7 +255,38 @@ $$
 
 so the two terms $$\sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}$$ (under the mean) and $$\sigma_t$$ (under actual variance) can be seen as having total noise $$\sqrt{1-\overline{\alpha}_{t-1}}$$, which matches the noise expression for the forward process, i.e., the distribution $$q(x_{t-1}|x_0)$$. The paper introduces this "splitting" of the noise factors to control the actual amount of noise that is induced during the backwards inference step. 
 
-To prove that forwards sampling from $$x_0$$ remains the same, we can use an inductive argument. At time $$T=t$$, 
+To prove that forwards sampling from $$x_0$$ remains the same, we can use an inductive argument, inducting downwards on the timestep. When $$T=t$$, we assume that $$q_{\sigma}(x_T|x_0)$$ is normally distributed (i.e., pure noise), so 
+
+$$
+q_{\sigma}(x_T|x_0) = \mathcal{N}(\sqrt{\overline{\alpha}_T}x_0, (1-\overline{\alpha}_T)I) = \mathcal{N}(0,I),
+$$
+
+and our base case holds. Now, by our inductive hypothesis, assume that we have 
+
+$$
+q_{\sigma}(x_t|x_0) = \mathcal{N}(\sqrt{\overline{\alpha}_t}x_0, (1-\overline{\alpha}_t)I),
+$$
+and we also have
+$$
+q_{\sigma}(x_{t-1}|x_t,x_0) = \mathcal{N}(\sqrt{\overline{\alpha}_{t-1}}x_0 + \sqrt{1 - \overline{\alpha}_{t-1} - \sigma_t^2}\cdot \frac{x_t - \sqrt{\overline{\alpha}_t}x_0}{\sqrt{1-\overline{\alpha}_t}}, \sigma_t^2 I).
+$$
+Now we have a marginal distribution $$q_{\sigma}(x_{t}|x_0)$$ and a distribution conditioned on this marginal distribution $$q_{\sigma}(x_{t-1} | x_t,x_0)$$. We wish to find the other marginal $$q_{\sigma}(x_{t-1}|x_0)$$, and luckily the setup is the same as our setup from [2.2](#2.2). Thus, using the results from our derivation, we have 
+$$
+q_{\sigma}(x_{t-1}|x_0) = \mathcal{N}(A\mu + b, L^{-1} + A\Lambda^{-1}A^T),
+$$
+where
+$$
+A\mu + b = \sqrt{\overline{\alpha}_{t-1}}x_0 + \sqrt{1 - \overline{\alpha}_{t-1}-\sigma_t^2}\cdot \frac{\sqrt{\overline{\alpha}_t}x_0 - \sqrt{\overline{\alpha}_t}x_0}{\sqrt{1-\overline{\alpha}_t}} = \sqrt{\overline{\alpha}_{t-1}}x_0,
+$$
+and
+$$
+L^{-1} + A\Lambda^{-1}A^T = \sigma_t^2I + \frac{1 - \overline{\alpha}_{t-1} - \sigma_t^2}{1 - \overline{\alpha}_t}(1-\overline{\alpha}_t)I = (1-\overline{\alpha}_{t-1})I.
+$$
+Thus,
+$$
+q_{\sigma}(x_{t-1}|x_0) = \mathcal{N}(\sqrt{\overline{\alpha}_{t-1}}x_0, (1-\overline{\alpha}_{t-1})I),
+$$
+which completes the proof.
 
 ## Website details
 
