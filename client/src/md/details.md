@@ -288,6 +288,20 @@ q_{\sigma}(x_{t-1}|x_0) = \mathcal{N}(\sqrt{\overline{\alpha}_{t-1}}x_0, (1-\ove
 $$
 which completes the proof.
 
+{\color{red} eventually add some stuff about the loss objective here. this is really cool...}
+
+### 4. Conditional generation
+
+Eventually, our goal is not just to generate image from noise, but we would like to also generate images conditioned on text labels. More specifically, our final task is to eventually generate images conditioned on both text labels *and* an input reference image, but we'll discuss this more in the [next section](#final-conditional-objective). In this section, we'll discuss methods for conditional generation in an easier subtask, which starts with generating images from discrete input classes. As a simple example of this subtask, we might have a diffusion model try to generate one of the ten digits from the MNIST dataset.
+
+#### 4.1 Classifier Guided
+We first consider the case when we have an external classifier $$f_{\phi}(y|x_t,t)$$. 
+
+#### 4.2 Classifier-free 
+
+<a id="final-conditional-objective"></a>
+### 5. Modifying the conditional objective for Pix2Pix
+
 ## Website details
 
 [under construction]
