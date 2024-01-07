@@ -19,8 +19,8 @@ import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import {
   Dropzone,
   IMAGE_MIME_TYPE,
-  DropzoneProps,
-  FileWithPath,
+  // DropzoneProps,
+  // FileWithPath,
 } from "@mantine/dropzone";
 import classes from "./root.module.css";
 
