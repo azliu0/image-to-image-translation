@@ -2,3 +2,4 @@ diffusers
 accelerate
 safetensors
 transformers
+APIFlask
