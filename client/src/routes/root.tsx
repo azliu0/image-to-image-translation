@@ -2,6 +2,7 @@ import AnimatedPage from "../components/AnimatedPage";
 import { useState } from "react";
 import LightDarkButton from "../components/LightDarkButton";
 import {
+  Image,
   Center,
   useComputedColorScheme,
   useMantineTheme,
@@ -14,13 +15,14 @@ import {
   Select,
   TextInput,
   MantineTheme,
+  SimpleGrid,
 } from "@mantine/core";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import {
   Dropzone,
   IMAGE_MIME_TYPE,
-  // DropzoneProps,
-  // FileWithPath,
+  //DropzoneProps,
+  FileWithPath,
 } from "@mantine/dropzone";
 import classes from "./root.module.css";
 
@@ -83,7 +85,25 @@ const RootPage = () => {
   const handleMouseLeaveRight = () => {
     setIsHoveredRight(false);
   };
+  const [imageSelected, setImageSelected] = useState(false);
+  const [files, setFiles] = useState<Array<FileWithPath>>([]);
 
+  const previews = (files: Array<FileWithPath>) => {
+    const imageUrl = URL.createObjectURL(files[0]);
+    return (
+      <Image
+        src={imageUrl}
+        w={255}
+        h={255}
+        onLoad={() => URL.revokeObjectURL(imageUrl)}
+      />
+    );
+  };
+
+  const handleDrop = (files: Array<FileWithPath>) => {
+    setFiles(files);
+    setImageSelected(true);
+  };
   return (
     <>
       <AnimatedPage>
@@ -131,7 +151,7 @@ const RootPage = () => {
         </Center>
         <Flex justify="center" gap={30} wrap="wrap">
           <Dropzone
-            onDrop={(files) => console.log("accepted files", files)}
+            onDrop={handleDrop}
             onReject={(files) => console.log("rejected files", files)}
             maxSize={5 * 1024 ** 2}
             accept={IMAGE_MIME_TYPE}
@@ -142,7 +162,10 @@ const RootPage = () => {
             <Group
               justify="center"
               gap="xl"
-              style={{ pointerEvents: "none", width: 366 }}
+              style={{
+                pointerEvents: "none",
+                width: imageSelected ? 255 : 366,
+              }}
             >
               <Dropzone.Accept>
                 <IconUpload
@@ -165,25 +188,41 @@ const RootPage = () => {
                 />
               </Dropzone.Reject>
               <Dropzone.Idle>
-                <IconPhoto
-                  style={{
-                    width: rem(52),
-                    height: rem(52),
-                    color: "var(--mantine-color-dimmed)",
-                  }}
-                  stroke={1.5}
-                />
+                {!imageSelected && (
+                  <IconPhoto
+                    style={{
+                      width: rem(52),
+                      height: rem(52),
+                      color: "var(--mantine-color-dimmed)",
+                    }}
+                    stroke={1.5}
+                  />
+                )}
               </Dropzone.Idle>
 
               <div>
-                <img id="blah"></img>
-                <Text size="xl" inline>
-                  Drag your starting image here or click to select an image
-                </Text>
-                <Text size="sm" c="dimmed" inline mt={7}>
-                  Attach a starting image. See the details page for guidance
-                  about what images work best!
-                </Text>
+                <div>
+                  {imageSelected ? (
+                    // Render uploaded image if previews array has an image
+                    <div>{previews(files)}</div>
+                  ) : (
+                    // Render text and file input if no images are selected
+                    <div>
+                      {!imageSelected && (
+                        <>
+                          <Text size="xl" inline>
+                            Drag your starting image here or click to select an
+                            image
+                          </Text>
+                          <Text size="sm" c="dimmed" inline mt={7}>
+                            Attach a starting image. See the details page for
+                            guidance about what images work best!
+                          </Text>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </Group>
           </Dropzone>
