@@ -67,7 +67,14 @@ $$
 L = \mathbb{E}_{x_0, \varepsilon, t}\left[\frac{1}{2\lVert \Sigma_{\theta}(x_t,t)\rVert_2^2}\lVert \tilde{\mu}_t(x_t,x_0) - \mu_{\theta}(x_t,t)\rVert^2\right].
 $$
 
-where $$\mu_{\theta}(x_t,t)$$ and $$\Sigma_{\theta}(x_t,t)$$ is the backwards mean and variance predicted by our model. [(Ho et al. 2020)](https://arxiv.org/abs/2006.11239) showed that ignoring the constant in front can produce better results for training, so eventually reduced the loss function to 
+where $$\mu_{\theta}(x_t,t)$$ and $$\Sigma_{\theta}(x_t,t)$$ is the backwards mean and variance predicted by our model. Substituting values for $$\tilde{\mu}(x_t, x_0)$$, this is equivalent to 
+
+<a id="ddpm-math-loss"></a>
+$$
+L = \mathbb{E}_{x_0,\varepsilon, t}\left[\frac{(1-\alpha_t)^2}{2\alpha_t(1-\overline{\alpha}_t)\lVert\Sigma_{\theta}(x_t,t)\rVert_2^2}\lVert \varepsilon_t - \varepsilon_{\theta}(x_t,t)\rVert^2\right].
+$$
+
+In their paper, [(Ho et al. 2020)](https://arxiv.org/abs/2006.11239) showed that ignoring the constant in front can produce better results for training, so eventually reduced the loss function to 
 
 $$
 L = \mathbb{E}_{x_0, \varepsilon, t}[\lVert \varepsilon_t - \varepsilon_{\theta}(x_t,t)\rVert^2].
@@ -255,6 +262,8 @@ $$
 
 so the two terms $$\sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}$$ (under the mean) and $$\sigma_t$$ (under actual variance) can be seen as having total noise $$\sqrt{1-\overline{\alpha}_{t-1}}$$, which matches the noise expression for the forward process, i.e., the distribution $$q(x_{t-1}|x_0)$$. The paper introduces this "splitting" of the noise factors to control the actual amount of noise that is induced during the backwards inference step. 
 
+#### 3.1. Proof that $$\mathcal{Q}$$ satisfies forwards definition
+
 To prove that forwards sampling from $$x_0$$ remains the same, we can use an inductive argument, inducting downwards on the timestep. When $$T=t$$, we assume that $$q_{\sigma}(x_T|x_0)$$ is normally distributed (i.e., pure noise), so 
 
 $$
@@ -288,7 +297,41 @@ q_{\sigma}(x_{t-1}|x_0) = \mathcal{N}(\sqrt{\overline{\alpha}_{t-1}}x_0, (1-\ove
 $$
 which completes the proof.
 
-{\color{red} eventually add some stuff about the loss objective here. this is really cool...}
+#### 3.2. Proof that $$\mathcal{Q}$$ can be applied to DDPM trained models
+
+One of the key properties that the inference distributions $$\mathcal{Q}$$ is that they can be applied even to models that were originally trained with the DDPM objective. 
+
+In order to prove this, we first introduce some more notation from the paper. Let $$\mathcal{L}$$ be a family of loss functions generalizing the DDPM training process, such that for any $$L_{\gamma}\in \mathcal{L}$$,  
+
+$$
+L_{\gamma}(\varepsilon_t) = \mathbb{E}_{x_0, \varepsilon_t, x_t = \sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon_t}\left[\gamma \lVert\varepsilon_t - \varepsilon_{\theta}(x_t)\rVert_2^2\right].
+$$
+
+For example, in DDPM, it was shown that the mathematically optimal loss was given by 
+
+$$
+\gamma = \frac{(1-\alpha_t)^2}{2\alpha_t(1-\overline{\alpha}_t)\lVert \Sigma_{\theta}(x_t,t)\rVert^2},
+$$ 
+
+(see [here](#ddpm-math-loss)), while $$\gamma = 1$$ was shown to be good for training. Now, let $$J_{\sigma}$$ be the optimal objective for learning $$q_{\sigma}$$. To show that $$\mathcal{Q}$$ inference can be effectively applied to DDPM-trained models, it suffices to show that $$J_{\sigma}\in \mathcal{L}$$. 
+
+[finish writing pls 🤓☝]
+
+In the notation of the paper, we use $$\equiv$$ instead of $$=$$ when we take steps that throw away constant factors. 
+
+$$
+\begin{align*}
+&\quad \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}[D_{KL}(q_{\sigma}(x_{t-1}|x_t,x_0))||p_{\theta}^{(t)}(x_{t-1}|x_t)] \\
+&\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}\left[
+  \left\lVert\left(\sqrt{\overline{\alpha}_{t-1}}x_0 + \sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}\cdot \frac{x_t - \sqrt{\overline{\alpha}_t}x_0}{\sqrt{1-\overline{\alpha}_t}}\right)\right.\right. \\
+&\qquad\qquad 
+  \left.\left. -\left(\sqrt{\overline{\alpha}_{t-1}}f_{\theta}^{(t)}(x_t) + \sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}\cdot \frac{x_t - \sqrt{\overline{\alpha}_t}f_{\theta}^{(t)}(x_t)}{\sqrt{1-\overline{\alpha}_t}}\right)\right\rVert^2\right] \\
+&\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}\left[\lVert x_0 - f_{\theta}^{(t)}(x_t)\rVert^2\right] \\
+&\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}\left[\left\lVert \frac{x_t - \sqrt{1-\overline{\alpha}_t}\varepsilon}{\sqrt{\overline{\alpha}_t}} - \frac{x_t - \sqrt{1-\overline{\alpha}_t}\varepsilon_{\theta}^{(t)}(x_t)}{\sqrt{\overline{\alpha}_t}} \right\rVert^2\right]\\
+&\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}[\lVert \varepsilon - \varepsilon_{\theta}^{(t)}(x_t)\rVert^2] \in \mathcal{L},
+\end{align*}
+$$
+as desired.
 
 ### 4. Conditional generation
 
