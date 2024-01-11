@@ -15,7 +15,7 @@ import {
   Select,
   TextInput,
   MantineTheme,
-  SimpleGrid,
+  //SimpleGrid,
 } from "@mantine/core";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import {
