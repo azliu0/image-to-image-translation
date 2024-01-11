@@ -31,6 +31,8 @@ Training details...
 
 Coming into this project, we wanted to have a solid understanding of the math underlying the model. We reproduce some of the things we learned here. Since we had some background knowledge, we'll only rigorously rederive results that we learned or found very interesting.
 
+<a id="ddpm"></a>
+
 ### 1. DDPM
 
 We begin with DDPMs [(Ho et al. 2020)](https://arxiv.org/abs/2006.11239). In these diffusion models, we noise images sampled from distribution $q(x)$ through the _forward process_, defined via
@@ -335,37 +337,35 @@ $$
 
 (see [here](#ddpm-math-loss)), while $$\gamma = 1$$ was shown to be good for training. Now, let $$J_{\sigma}$$ be the optimal objective for learning $$q_{\sigma}$$. To show that $$\mathcal{Q}$$ inference can be effectively applied to DDPM-trained models, it suffices to show that $$J_{\sigma}\in \mathcal{L}$$.
 
-We first utilize the variational inference objective from [(Ho et al. 2020)](https://arxiv.org/abs/2006.11239), where they defined $$L_{VLB}$$ as
+We first utilize the variational inference objective from [(Ho et al. 2020)](https://arxiv.org/abs/2006.11239):
 
 $$
 L_{VLB} = \mathbb{E}_{x_{0:T}\sim q_{\sigma}(x_{0:T})}\left[\frac{\log q_{\sigma}(x_{1:T\vert x_0})}{\log p_{\theta}(x_{0:T})}\right]
 $$
 
-Using results from [(Sohl-Dickstein et al. 2015)](https://arxiv.org/abs/1503.03585) and the same derivations from DDPM, we can define $$J_{\sigma}(\epsilon_{\theta})$$ as
+Using results from [(Sohl-Dickstein et al. 2015)](https://arxiv.org/abs/1503.03585) and the same derivations from DDPM, we have
 
 $$
 J_{\sigma}(\epsilon_{\theta}) \equiv \mathbb{E}_{x_{0:T}\sim q_{\sigma}(x_{0:T})}\left[\sum_{t=2}^{T}D_{KL}((q_{\sigma}(x_{t-1}\vert x_t, x_0))\Vert p_{\theta}^{(t)}(x_{t-1}\vert x_t)) - \log p_{\theta}^{(1)}(x_0 \vert x_1)\right]
 $$
 
-when only taking the $$L_{t-1}$$ term.
+when only taking terms $$L_1,\dots,L_{t-1}$$ (in the notation of the paper, we use $$\equiv$$ instead of $$=$$ when we take steps that throw away constant factors).
 
-Now, although we haved defined $$q_{\sigma}(x_{t-1}\vert x_t, x_0)$$ [here](#3-ddim), we still need a trainable generative process $$p_{\theta}(x_{0:T})$$ where each reverse time step $$p_{\theta}^{(t)}(x_{t-1} \vert x_{t})$$ leverages information from our derived distribution $$q_{\sigma}(x_{t-1}\vert x_t, x_0)$$. In order to derive the $$x_0$$ term, we can predict it based off of our noisy observation $$x_t$$.
+Now, per the paper, we define the actual generative process $$p_{\theta}(x_{0:T})$$ as a function of the derived distribution $$q_{\sigma}(x_{t-1}\vert x_t, x_0)$$. Since we don't know $$x_0$$ during inference, we replace this term in $$q_{\sigma}$$ with the (derived) output of the neural net.
 
-From the definition of the forward process defined [here](#1-ddpm), we can rearrange the equation in order to predict the denoised observation of $$x_0$$ given $$x_t$$ here:
-
-$$
-f_{\theta}^{(t)}(x_t) := \frac{(x_t - \sqrt{1-\alpha_t} \cdot \epsilon_{\theta}^{(t)}(x_t))}{\sqrt{\alpha_t}}
-$$
-
-Then, we define the reverse generative process with a prior distribution $$p_{\theta}^{(t)}(x_{t}) = \mathcal{N}(0, I)$$ as
+From the definition of the forward process (see [here](#ddpm)), our predicted denoised observation of $$x_0$$ given $$x_t$$ is given by
 
 $$
-p_{\theta}^{(t)}(x_{t-1} \vert x_{t}) = q_{\sigma}(x_{t-1} \vert x_t, f_{\theta}^{(t)}(x_t))
+f_{\theta}^{(t)}(x_t) := \frac{(x_t - \sqrt{1-\alpha_t} \cdot \epsilon_{\theta}^{(t)}(x_t))}{\sqrt{\alpha_t}}.
 $$
 
-as desired.
+Thus, we can define the reverse generative process with a prior distribution $$p_{\theta}^{(t)}(x_{t}) = \mathcal{N}(0, I)$$ as
 
-In the notation of the paper, we use $$\equiv$$ instead of $$=$$ when we take steps that throw away constant factors.
+$$
+p_{\theta}^{(t)}(x_{t-1} \vert x_{t}) = q_{\sigma}(x_{t-1} \vert x_t, f_{\theta}^{(t)}(x_t)).
+$$
+
+Finally, we may evaluate $$J_{\sigma}$$:
 
 $$
 \begin{align*}
