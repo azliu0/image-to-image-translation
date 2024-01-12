@@ -22,7 +22,7 @@ const Page = ({ mdPageLink, displayTitle }: PageInterface) => {
   };
 
   useEffect(() => {
-    import(mdPageLink)
+    import(/* @vite-ignore */ mdPageLink)
       .then((mdPageLinkModule) => mdPageLinkModule.default)
       .then((mdPageFile) => fetch(mdPageFile))
       .then((res) => res.text())
