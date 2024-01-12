@@ -251,6 +251,24 @@ With some more work, we could also extract the other conditional, but we won't n
 
 Like our result in [2.1](#2.1), this final expression is nice because it aligns reasonably with what we expect. We have $$y|x$$ sampled from a distribution with mean $$f(x)$$, where $$f$$ is linear; therefore, the fact that $$\mathbb{E}[y] = f(\mathbb{E}(x))$$ makes intuitive sense. Further, since we have $$f(x) = Ax+b$$, we expect $$\text{Cov}(f(x)) = A^T\text{Cov(x)}A$$. The only "dependence" that $$y$$ has on $$x$$ is through their means; $$\text{Cov(y|x)} = L^{-1}$$ is a source of noise that is essentially independent from the noise associated with $$x$$, so through linearity of variance it makes intuitive sense that $$\text{Cov}(y) = A^T\text{Cov(x)}A + L^{-1}$$.
 
+<a id="2.3"></a>
+
+#### 2.3. KL Divergence
+
+The last thing we will examine is how to compute the KL divergence, or relative entropy, between two multivariate gaussians. The general expression is given by 
+
+$$
+D_{KL}(P || Q) = \int p(x) \log\left(\frac{p(x)}{q(x)}\right) \mathrm{d}x.
+$$
+
+Applying this to multivariate $$P=\mathcal{N}(\mu_1, \Sigma_1)$$ and $$Q=\mathcal{N}(\mu_2, \Sigma_2)$$, we have
+
+$$
+\begin{align*}
+\int (\log(p(x)) - \log(q(x))) p(x) \mathrm{d} x &= \int 
+\end{align*}
+$$
+
 <a id="ddim"></a>
 
 ### 3. DDIM
@@ -346,7 +364,7 @@ $$
 Using results from [(Sohl-Dickstein et al. 2015)](https://arxiv.org/abs/1503.03585) and the same derivations from DDPM, we have
 
 $$
-J_{\sigma}(\epsilon_{\theta}) \equiv \mathbb{E}_{x_{0:T}\sim q_{\sigma}(x_{0:T})}\left[\sum_{t=2}^{T}D_{KL}((q_{\sigma}(x_{t-1}\vert x_t, x_0))\Vert p_{\theta}^{(t)}(x_{t-1}\vert x_t)) - \log p_{\theta}^{(1)}(x_0 \vert x_1)\right]
+J_{\sigma}(\varepsilon_{\theta}) \equiv \mathbb{E}_{x_{0:T}\sim q_{\sigma}(x_{0:T})}\left[\sum_{t=2}^{T}D_{KL}((q_{\sigma}(x_{t-1}\vert x_t, x_0))\Vert p_{\theta}^{(t)}(x_{t-1}\vert x_t)) - \log p_{\theta}^{(1)}(x_0 \vert x_1)\right]
 $$
 
 when only taking terms $$L_1,\dots,L_{t-1}$$ (in the notation of the paper, we use $$\equiv$$ instead of $$=$$ when we take steps that throw away constant factors).
@@ -356,13 +374,25 @@ Now, per the paper, we define the actual generative process $$p_{\theta}(x_{0:T}
 From the definition of the forward process (see [here](#ddpm)), our predicted denoised observation of $$x_0$$ given $$x_t$$ is given by
 
 $$
-f_{\theta}^{(t)}(x_t) := \frac{(x_t - \sqrt{1-\alpha_t} \cdot \epsilon_{\theta}^{(t)}(x_t))}{\sqrt{\alpha_t}}.
+f_{\theta}^{(t)}(x_t) := \frac{(x_t - \sqrt{1-\alpha_t} \cdot \varepsilon_{\theta}^{(t)}(x_t))}{\sqrt{\alpha_t}}.
 $$
 
 Thus, we can define the reverse generative process with a prior distribution $$p_{\theta}^{(t)}(x_{t}) = \mathcal{N}(0, I)$$ as
 
 $$
 p_{\theta}^{(t)}(x_{t-1} \vert x_{t}) = q_{\sigma}(x_{t-1} \vert x_t, f_{\theta}^{(t)}(x_t)).
+$$
+
+Finally, we have enough to evaluate $$J_{\sigma}$$. First note that we can rewrite the expected value:
+
+$$
+J_{\sigma}(\varepsilon_{\theta}) \equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0+\sqrt{1-\overline{\alpha}_t}}[D_{KL}(q_{\sigma}(x_{t-1}|x_t,x_0))||p_{\theta}^{(t)}(x_{t-1}|x_t)].
+$$
+
+Now we examine the term inside of the expected value. The KL divergence of two normal distributions is given by
+
+$$
+
 $$
 
 Finally, we may evaluate $$J_{\sigma}$$:

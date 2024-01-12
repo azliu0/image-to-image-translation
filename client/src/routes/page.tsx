@@ -25,10 +25,7 @@ const Page = ({ mdPageLink, displayTitle }: PageInterface) => {
     import(mdPageLink)
       .then((mdPageLinkModule) => mdPageLinkModule.default)
       .then((mdPageFile) => fetch(mdPageFile))
-      .then((res) => {
-        console.log(res);
-        return res.text();
-      })
+      .then((res) => res.text())
       .then((text: string) => parseMD(text))
       .then((parsed: MarkdownFile) => {
         setAuthor(parsed.author);
