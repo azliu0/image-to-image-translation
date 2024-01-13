@@ -431,6 +431,8 @@ Eventually, our goal is not just to generate image from noise, but we would like
 
 #### 4.1 Classifier Guided
 
+The general approach is as follows. At each step during inference, we are trying to approximate $$\nabla_{x_t}\log q(x_t)$$. 
+
 We first consider the case when we have an external classifier $$f_{\phi}(y|x_t,t)$$.
 
 #### 4.2 Classifier-free
