@@ -186,13 +186,13 @@ $$
 -\frac{1}{2}x_a^T(\Lambda_{aa}-\Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})x_a + x_a^T(\Lambda_{aa} - \Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})\mu_a + \text{const.},
 $$
 
-so [matching coefficients](#gaussian) gives
+so comparing coefficients with the [general gaussian expansion](#gaussian) gives
 
 $$
 \text{Cov}[p(x_a)] = (\Lambda_{aa} - \Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})^{-1},
 $$
 
-and
+and thus
 
 $$
 \mathbb{E}[p(x_a)] = \text{Cov}[p(x_a)]^{-1}(\Lambda_{aa} - \Lambda_{ab}\Lambda_{bb}^{-1}\Lambda_{ba})^{-1}\mu_a = \mu_a.
@@ -229,16 +229,16 @@ $$
 \end{align*}
 $$
 
-[Matching coefficients](#gaussian), we have
+Comparing coefficients with the [general gaussian expansion](#gaussian), we have
 
 $$
 \text{Cov}(x,y) = \begin{pmatrix}\Lambda + A^TLA & -A^TL \\ -LA & L\end{pmatrix}^{-1} = \begin{pmatrix}\Lambda^{-1} & \Lambda^{-1}A^T \\ A\Lambda^{-1} & L^{-1} + A\Lambda^{-1}A^T\end{pmatrix}.
 $$
 
-and
+and thus 
 
 $$
-\mathbb{E}(x,y) = \text{Cov}(x,y)\begin{pmatrix}\Lambda\mu -A^TLb \\ Lb\end{pmatrix} = \begin{pmatrix}\mu \\ A\mu + B\end{pmatrix}.
+\mathbb{E}(x,y) = \begin{pmatrix}\Lambda^{-1} & \Lambda^{-1}A^T \\ A\Lambda^{-1} & L^{-1} + A\Lambda^{-1}A^T\end{pmatrix}^{-1}\begin{pmatrix}\Lambda\mu -A^TLb \\ Lb\end{pmatrix} = \begin{pmatrix}\mu \\ A\mu + B\end{pmatrix}.
 $$
 
 Finally, using [2.1](#2.1),
@@ -258,14 +258,27 @@ Like our result in [2.1](#2.1), this final expression is nice because it aligns 
 The last thing we will examine is how to compute the KL divergence, or relative entropy, between two multivariate gaussians. The general expression is given by 
 
 $$
-D_{KL}(P || Q) = \int p(x) \log\left(\frac{p(x)}{q(x)}\right) \mathrm{d}x.
+D_{KL}(P || Q) = \mathbb{E}_{x\sim p(x)}\left[\log \frac{p(x)}{q(x)}\right].
 $$
 
 Applying this to multivariate $$P=\mathcal{N}(\mu_1, \Sigma_1)$$ and $$Q=\mathcal{N}(\mu_2, \Sigma_2)$$, we have
 
 $$
 \begin{align*}
-\int (\log(p(x)) - \log(q(x))) p(x) \mathrm{d} x &= \int 
+\mathbb{E}_{x\sim p(x)}\left[\log \frac{p(x)}{q(x)}\right] &= \frac{1}{2}\mathbb{E}_{x\sim p(x)}\left[\log \frac{\vert \Sigma_2\vert}{\vert \Sigma_1\vert} - (x-\mu_1)^T\Sigma_1^{-1}(x-\mu_1) + (x-\mu_2)^T\Sigma_2^{-1}(x-\mu_2)\right].
+\end{align*}
+$$
+
+To simplify this, we can apply the [trace trick](https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices#The_trace_of_a_1_.C3.97_1_matrix); since quadratic forms $$x^TAx$$ are singletons, it is equal to its trace, and since traces commute, it is thus also equal to $$\text{Tr}((Ax)x^T)$$ and $$\text{Tr}(x(x^TA))$$. So, we can simplify our expression as follows:
+
+$$
+\begin{align*}
+&\frac{1}{2}\log\frac{\vert \Sigma_2\vert}{\vert \Sigma_1\vert} + \frac{1}{2}\mathbb{E}_{x\sim p(x)}\left[\text{Tr}(-\Sigma_1^{-1}(x-\mu_1)(x-\mu_1)^T) + \text{Tr}(\Sigma_2^{-1}(x-\mu_2)(x-\mu_2)^T)\right] \\
+&= \frac{1}{2}\log\frac{\vert \Sigma_2\vert}{\vert \Sigma_1\vert} + \frac{1}{2}\mathbb{E}_{x\sim p(x)}\left[\text{Tr}(-\Sigma_1^{-1}\Sigma_1) + \text{Tr}(\Sigma_2^{-1}(xx^T-2x\mu_2+\mu_2\mu_2^T))\right] \\
+&= \frac{1}{2}\log\frac{\vert \Sigma_2\vert}{\vert \Sigma_1\vert} -\frac{1}{2}d + \frac{1}{2}\mathbb{E}_{x\sim p(x)}\left[\text{Tr}(\Sigma_2^{-1}(x^Tx-2x^T\mu_2+\mu_2^T\mu_2)\right)] \\
+&= \frac{1}{2}\log\frac{\vert \Sigma_2\vert}{\vert \Sigma_1\vert} -\frac{1}{2}d + \frac{1}{2}\mathbb{E}_{x\sim p(x)}\left[\text{Tr}(\Sigma_2^{-1}((\Sigma_1-\mu_1^T\mu_1+2x^T\mu_1)-2x^T\mu_2+\mu_2^T\mu_2)\right)] \\
+&= \frac{1}{2}\log\frac{\vert \Sigma_2\vert}{\vert \Sigma_1\vert} -\frac{1}{2}d + \frac{1}{2}\text{Tr}(\Sigma_2^{-1}\Sigma_1) + \frac{1}{2}\mathbb{E}_{x\sim p(x)}\left[\text{Tr}(\Sigma_2^{-1}(\mu_1-\mu_2)^T(\mu_1-\mu_2)\right)] \\
+&= \frac{1}{2}\log\frac{\vert \Sigma_2\vert}{\vert \Sigma_1\vert} -\frac{1}{2}d + \frac{1}{2}\text{Tr}(\Sigma_2^{-1}\Sigma_1) + \frac{1}{2}(\mu_1-\mu_2)^T\Sigma_2^{-1}(\mu_1-\mu_2).
 \end{align*}
 $$
 
@@ -386,25 +399,25 @@ $$
 Finally, we have enough to evaluate $$J_{\sigma}$$. First note that we can rewrite the expected value:
 
 $$
-J_{\sigma}(\varepsilon_{\theta}) \equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0+\sqrt{1-\overline{\alpha}_t}}[D_{KL}(q_{\sigma}(x_{t-1}|x_t,x_0))||p_{\theta}^{(t)}(x_{t-1}|x_t)].
+J_{\sigma}(\varepsilon_{\theta}) \equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0+\sqrt{1-\overline{\alpha}_t}\varepsilon}[D_{KL}(q_{\sigma}(x_{t-1}|x_t,x_0))||q_{\sigma}(x_{t-1} \vert x_t, f_{\theta}^{(t)}(x_t))].
 $$
 
-Now we examine the term inside of the expected value. The KL divergence of two normal distributions is given by
-
-$$
-
-$$
-
-Finally, we may evaluate $$J_{\sigma}$$:
+Using [2.3](#2.3), we see that this is equivalent to optimizing mse between the two means (under $$\equiv$$), so the part of our objective inside of the expected value becomes
 
 $$
 \begin{align*}
-&\quad \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}[D_{KL}(q_{\sigma}(x_{t-1}|x_t,x_0))||p_{\theta}^{(t)}(x_{t-1}|x_t)] \\
-&\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}\left[
+& \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}\left[
   \left\lVert\left(\sqrt{\overline{\alpha}_{t-1}}x_0 + \sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}\cdot \frac{x_t - \sqrt{\overline{\alpha}_t}x_0}{\sqrt{1-\overline{\alpha}_t}}\right)\right.\right. \\
 &\qquad\qquad
-  \left.\left. -\left(\sqrt{\overline{\alpha}_{t-1}}f_{\theta}^{(t)}(x_t) + \sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}\cdot \frac{x_t - \sqrt{\overline{\alpha}_t}f_{\theta}^{(t)}(x_t)}{\sqrt{1-\overline{\alpha}_t}}\right)\right\rVert^2\right] \\
-&\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}\left[\lVert x_0 - f_{\theta}^{(t)}(x_t)\rVert^2\right] \\
+  \left.\left. -\left(\sqrt{\overline{\alpha}_{t-1}}f_{\theta}^{(t)}(x_t) + \sqrt{1-\overline{\alpha}_{t-1}-\sigma_t^2}\cdot \frac{x_t - \sqrt{\overline{\alpha}_t}f_{\theta}^{(t)}(x_t)}{\sqrt{1-\overline{\alpha}_t}}\right)\right\rVert^2\right].
+\end{align*}
+$$
+
+Further simplifying,
+
+$$
+\begin{align*}
+J_{\sigma}(\varepsilon_{\theta}) &\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}\left[\lVert x_0 - f_{\theta}^{(t)}(x_t)\rVert^2\right] \\
 &\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}\left[\left\lVert \frac{x_t - \sqrt{1-\overline{\alpha}_t}\varepsilon}{\sqrt{\overline{\alpha}_t}} - \frac{x_t - \sqrt{1-\overline{\alpha}_t}\varepsilon_{\theta}^{(t)}(x_t)}{\sqrt{\overline{\alpha}_t}} \right\rVert^2\right]\\
 &\equiv \mathbb{E}_{x_0,\varepsilon,x_t=\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\varepsilon}[\lVert \varepsilon - \varepsilon_{\theta}^{(t)}(x_t)\rVert^2] \in \mathcal{L},
 \end{align*}
