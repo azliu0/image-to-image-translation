@@ -1,5 +1,4 @@
 torch
-attention
 diffusers
 accelerate
 safetensors
