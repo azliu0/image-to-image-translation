@@ -2,30 +2,38 @@
 title: About this website
 author: Jack Chen and Andrew Liu
 date: December 25, 2023
-time: 2 min
+time: 5 min
 ---
 
-[under construction]
+This website is a visualizer for InstructPix2Pix ([Brooks et al. 2022](https://arxiv.org/abs/2211.09800)), an image-to-image diffusion model that incorporates text as conditional guidance to the input. The base architecture is Stable Diffusion ([Rombach et al. 2021](https://arxiv.org/abs/2112.10752)) with some additional inference heuristics  inspired by Classifier-Free Guidance ([Ho et al. 2022](https://arxiv.org/abs/2207.12598)).
 
-This website is a visualizer for InstructPix2Pix ([Brooks et al. 2022](https://arxiv.org/abs/2211.09800)), an image-to-image diffusion model that incorporates text as conditional guidance to the input. The base architecture is Stable Diffusion ([Rombach et al. 2021](https://arxiv.org/abs/2112.10752)) with some additional inference heuristics  based on Classifier-Free Guidance ([Ho et al. 2022](https://arxiv.org/abs/2207.12598)).
+## How to use this website 
 
-The general capabilities of the model include being able to transform an input image, some input text, and generate a new image that is guided on both inputs.
+### Models
 
-[perhaps insert a sample image here?]
+The general capabilities of the model include being able to transform an input image, some input text, and generate a new image that is guided on both inputs. We plan to support eventually support 6 different variations of this model <span style="color: gray;">(models in gray are not supported yet)</span>:
 
-We implement the architecture in the original InstructPix2Pix paper, where the results of the models can be played around with in this website. Images with 512x512 base resolution will generally work best, since this is the. To seem some examples of simple images and prompts that seemed to produce decent results, check out the [gallery](/gallery).
+- **pix2pix-base**: the original paper model as it appears on [HuggingFace](https://huggingface.co/docs/diffusers/training/instructpix2pix)
+- **pix2pix-full-no-cfg-no-ddim**: our implemented version of the model with all major architectural components; this is essentially Stable Diffusion. this version of the model does not use Classifier Free Guidance (CFG) or DDIM as inference heuristics. By "CFG", we refer to the slightly refined version of CFG that was introduced in InstructPix2Pix, to specifically support the extra class conditional input (reference image).
+<div style="color: gray;">
+
+- pix2pix-full: our implemented version of the model with all major architectural components, and with CFG and DDIM as inference heuristics
+- pix2pix-full-no-ddim: our implemented version of the model, with CFG but no DDIM for inference
+- pix2pix-1: our implemented diffusion model, with the variational autoencoder and transformer taken from a pre-trained library. no CFG/DDIM
+- pix2pix-2: our implemented diffusion model and variational autoencoder, with the transformer taken from a pre-trained library. no CFG/DDIM
+</div>
+
+### Image resolution
+
+Images with 512x512 base resolution will generally work best, since this is the default resolution that is supported by our custom model. To seem some examples of simple images and prompts that seemed to produce decent results, check out the [gallery](/gallery).
+
+### Other parameters
+
+[strength, cfg factor...]
 
 ## Model details
 
-[under construction]
-
-Eventually, we will publish some details here about what models we coded and trained for this website.
-
-Model details...
-
-Dataset details...
-
-Training details...
+[detail model architecture...]
 
 ## Website details
 
