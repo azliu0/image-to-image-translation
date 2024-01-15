@@ -60,40 +60,63 @@ class VAE_ResidualBlock(nn.Module):
 class VAE_Decoder(nn.Sequential):
     def __init__(self):
         super().__init__(
+            # (4,h/8,w/8)
             nn.Conv2d(4, 4, kernel_size=1, padding=0),
-            nn.Conv2d(4, 4, kernel_size=1, padding=0),
+            # (4,h/8,w/8) -> (512, h/8, w/8)
+            nn.Conv2d(4, 4, kernel_size=3, padding=1),
+            # (512, h/8, w/8)
             VAE_ResidualBlock(512, 512),
+            # (512, h/8, w/8)
             VAE_AttentionBlock(512),
+            # (512, h/8, w/8)
             VAE_ResidualBlock(512, 512),
+            # (512, h/8, w/8)
             VAE_ResidualBlock(512, 512),
+            # (512, h/8, w/8)
             VAE_ResidualBlock(512, 512),
+            # (512, h/8, w/8)
             VAE_ResidualBlock(512, 512),
-            # (h/8,w/8)->(h/4,w/4)
+            # (512, h/8, w/8) -> (512, h/4, w/4)
             nn.Upsample(scale_factor=2),
+            # (512, h/4, w/4)
             nn.Conv2d(512, 512, kernel_size=3, padding=1),
+            # (512, h/4, w/4)
             VAE_ResidualBlock(512, 512),
+            # (512, h/4, w/4)
             VAE_ResidualBlock(512, 512),
+            # (512, h/4, w/4)
             VAE_ResidualBlock(512, 512),
-            # (h/4,w/4)->(h/2,w/2)
+            # (512, h/4, w/4) -> (512, h/2, w/2)
             nn.Upsample(scale_factor=2),
+            # (512, h/2, w/2)
             nn.Conv2d(512, 512, kernel_size=3, padding=1),
+            # (512, h/2, w/2) -> (256, h/2, w/2)
             VAE_ResidualBlock(512, 256),
+            # (256, h/2, w/2)
             VAE_ResidualBlock(256, 256),
+            # (256, h/2, w/2)
             VAE_ResidualBlock(256, 256),
-            # (h/2,w/2)->(h,w)
+            # (256, h/2, w/2) -> (256, h, w)
             nn.Upsample(scale_factor=2),
+            # (256, h, w)
             nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            # (256, h, w) -> (128, h, w)
             VAE_ResidualBlock(256, 128),
+            # (128, h, w)
             VAE_ResidualBlock(128, 128),
+            # (128, h, w)
             VAE_ResidualBlock(128, 128),
+            # (128, h, w)
             nn.GroupNorm(32, 128),
+            # (128, h, w)
             nn.SiLU(),
+            # (128, h, w) -> (3, h, w)
             # back to original image shape!
             nn.Conv2d(128, 3, kernel_size=3, padding=1),
         )
 
     def forward(self, x):
-        # x: (4,h/8,w/8)
+        # x: (4,h/8,w/8), latent size
 
         # https://github.com/huggingface/diffusers/issues/437
         x /= 0.18215
