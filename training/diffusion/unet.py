@@ -322,6 +322,25 @@ class UNET(nn.Module):
             ]
         )
 
+    def forward(self, x, context, time):
+        # x: (4, h/8, w/8), latent image size
+        # context: (seq, dim)
+        # time: (1, 1280)
+
+        skip_connections = []
+        for layers in self.encoders:
+            x = layers(x, context, time)
+            skip_connections.append(x)
+
+        x = self.bottleneck(x, context, time)
+
+        for layers in self.decoders:
+            # concatenate along the channels dimension
+            x = torch.cat((x, skip_connections.pop()), dim=1)
+            x = layers(x, context, time)
+
+        return x
+
 
 class UNET_OutputLayer(nn.Module):
     def __init__(self, in_channels, out_channels):
