@@ -1,7 +1,13 @@
+import sys
+
+sys.path.append(".")
+sys.path.append("..")
+
+
 import torch
 from torch import nn
 from torch.nn import functional as F
-from ..attention.attention import SelfAttention, CrossAttention
+from attention.attention import SelfAttention, CrossAttention
 
 
 class TimeEmbedding(nn.Module):
@@ -197,7 +203,7 @@ class UNET(nn.Module):
 
         # the #s in front of each comment represent corresponding skip connections
 
-        self.encoders = nn.Module(
+        self.encoders = nn.ModuleList(
             [
                 # 12. (4, h/8, w/8) -> (320, h/8, w/8)
                 SwitchSequential(nn.Conv2d(4, 320, kernel_size=3, padding=1)),
@@ -361,6 +367,7 @@ class UNET_OutputLayer(nn.Module):
 
 class Diffusion(nn.Module):
     def __init__(self):
+        super().__init__()
         self.time_embedding = TimeEmbedding(320)
         self.unet = UNET()
         self.final = UNET_OutputLayer(320, 4)

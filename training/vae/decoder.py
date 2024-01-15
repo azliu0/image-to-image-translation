@@ -1,7 +1,13 @@
+import sys
+
+sys.path.append(".")
+sys.path.append("..")
+
+
 import torch
 from torch import nn
 from torch.nn import functional as F
-from ..attention.attention import SelfAttention
+from attention.attention import SelfAttention
 
 
 class VAE_AttentionBlock(nn.Module):
@@ -63,7 +69,7 @@ class VAE_Decoder(nn.Sequential):
             # (4,h/8,w/8)
             nn.Conv2d(4, 4, kernel_size=1, padding=0),
             # (4,h/8,w/8) -> (512, h/8, w/8)
-            nn.Conv2d(4, 4, kernel_size=3, padding=1),
+            nn.Conv2d(4, 512, kernel_size=3, padding=1),
             # (512, h/8, w/8)
             VAE_ResidualBlock(512, 512),
             # (512, h/8, w/8)

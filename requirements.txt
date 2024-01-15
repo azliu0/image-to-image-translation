@@ -3,4 +3,4 @@ diffusers
 accelerate
 safetensors
 transformers
-APIFlask
+pytorch_lightning
