@@ -18,10 +18,12 @@ class VAE_AttentionBlock(nn.Module):
         # (c,h,w) -> (c,h*w)
         x = x.view(n, c, h * w)
         # (c,h*w) -> (h*w,c)
+        # transpose because attention input is (seq,dim)
         x = x.transpose(-1, -2)
         # (h*w,c) -> (h*w,c)
         x = self.attention(x)
         # (h*w,c) -> (c,h*w)
+        # undo previous transpose
         x = x.transpose(-1, -2)
         # (c,h*w) -> (c,h,w)
         x = x.view(n, c, h, w)
