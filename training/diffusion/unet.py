@@ -90,36 +90,46 @@ class UNET_AttentionBlock(nn.Module):
         super().__init__()
         channels = n_head * n_embd
 
+        # normalization
         self.groupnorm = nn.GroupNorm(32, channels, eps=1e-6)
         self.conv_input = nn.Conv2d(channels, channels, kernel_size=1, padding=0)
 
+        # self attention
         self.layernorm_1 = nn.LayerNorm(channels)
         self.attention_1 = SelfAttention(n_head, channels, in_proj_bias=False)
+
+        # cross attention
         self.layernorm_2 = nn.LayerNorm(channels)
         self.attention_2 = CrossAttention(
             n_head, channels, d_context, in_proj_bias=False
         )
+
+        # geglu activation
         self.layernorm_3 = nn.LayerNorm(channels)
         self.linear_geglu_1 = nn.Linear(channels, 4 * channels * 2)
         self.linear_geglu_2 = nn.Linear(4 * channels, channels)
 
+        # output
         self.conv_output = nn.Conv2d(channels, channels, kernel_size=1, padding=0)
 
     def forward(self, x, context):
-        # x : (h,w)
+        # x : (c,h,w)
         # context: (seq, dim)
 
+        # (c,h,w)
         residue_long = x
 
+        # (c,h,w)
         x = self.groupnorm(x)
-
+        # (c,h,w)
         x = self.conv_input(x)
 
         n, c, h, w = x.shape
 
-        # (c, h, w) -> (c, h*w)
+        # (c,h,w) -> (c,h*w)
         x = x.view((n, c, h * w))
-        # (c, h*w) -> (h*w, c)
+        # (c,h*w) -> (h*w,c)
+        # transpose because attention input is (seq,dim)
         x = x.transpose(-1, -2)
 
         #  self attention with skip connection
