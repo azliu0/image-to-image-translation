@@ -1,5 +1,6 @@
 from apiflask import APIFlask
 from flask_cors import CORS
+from flask import Blueprint
 
 cors = CORS()
 
@@ -16,5 +17,8 @@ def create_app():
         cors.init_app(
             app, origins=app.config.get("ALLOWED_DOMAINS"), supports_credentials=True
         )
+
+        api = Blueprint("api", __name__, url_prefix="/api")
+        app.register_blueprint(api)
 
     return app

@@ -24,6 +24,7 @@ def download_image(url):
 
 
 image = download_image(url)
+print(image)
 
 prompt = "turn him into cyborg"
 images = pipe(

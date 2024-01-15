@@ -83,7 +83,7 @@ html {
 }
 
 .uploadBoxRightChild {
-  padding-top: 133px;
+  padding-top: 155px;
 }
 
 .uploadBox:hover {
@@ -194,4 +194,12 @@ html {
 
 .footnote {
   font-size: 12px;
+}
+
+.previewContainer {
+  margin-top: -30px;
+  width: 512px;
+  height: 512px;
+  display: flex;
+  justify-content: center;
 }

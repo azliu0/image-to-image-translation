@@ -19,11 +19,11 @@ models = model_loader.preload_models_from_standard_weights(model_file, DEVICE)
 prompt = "Dog with hat"
 uncond_prompt = ""  # Also known as negative prompt
 
-image_path = "../images/dog.jpg"
+image_path = "Dog_Breeds.jpg"
 input_image = Image.open(image_path)
 # Higher values means more noise will be added to the input image, so the result will further from the input image.
 # Lower values means less noise is added to the input image, so output will be closer to the input image.
-strength = 0.1
+strength = 0.5
 
 ## SAMPLER
 

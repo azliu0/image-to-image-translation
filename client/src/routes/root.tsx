@@ -93,9 +93,12 @@ const RootPage = () => {
     return (
       <Image
         src={imageUrl}
-        w={255}
-        h={255}
+        fit="contain"
         onLoad={() => URL.revokeObjectURL(imageUrl)}
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+        }}
       />
     );
   };
@@ -160,8 +163,8 @@ const RootPage = () => {
             maxSize={5 * 1024 ** 2}
             accept={IMAGE_MIME_TYPE}
             className={classes.dropzone}
-            h={500}
-            w={500}
+            h={520}
+            w={520}
           >
             <Group
               justify="center"
@@ -208,7 +211,9 @@ const RootPage = () => {
                 <div>
                   {imageSelected ? (
                     // Render uploaded image if previews array has an image
-                    <div>{previews(files)}</div>
+                    <div className={classes.previewContainer}>
+                      {previews(files)}
+                    </div>
                   ) : (
                     // Render text and file input if no images are selected
                     <div>
@@ -239,8 +244,8 @@ const RootPage = () => {
                 ? getHoverColor(useMantineTheme())
                 : getBackgroundColor(useMantineTheme()),
               borderColor: getBorderColor(useMantineTheme()),
-              width: 500,
-              height: 500,
+              width: 520,
+              height: 520,
             }}
           >
             <Center className={classes.uploadBoxRightChild}>

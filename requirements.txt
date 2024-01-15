@@ -4,3 +4,5 @@ accelerate
 safetensors
 transformers
 pytorch_lightning
+flask_cors
+python-dotenv
