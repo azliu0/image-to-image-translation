@@ -112,6 +112,7 @@ def generate(
             model_input = latents
 
             if do_cfg:
+                print(model_input)
                 model_input = model_input.repeat(2, 1, 1, 1)
 
             model_output = diffusion(model_input, context, time_embedding)
@@ -121,6 +122,7 @@ def generate(
                 model_output = cfg_scale * (output_cond - output_uncond) + output_uncond
 
             latents = sampler.step(timestep, latents, model_output)
+            print("latents", latents)
 
         decoder = models["decoder"]
 

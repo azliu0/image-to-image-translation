@@ -357,7 +357,7 @@ class UNET_OutputLayer(nn.Module):
     def forward(self, x):
         # x: (320, h/8, w/8)
 
-        x = self.gropunorm(x)
+        x = self.groupnorm(x)
         x = F.silu(x)
 
         # (4, h/8, w/8)

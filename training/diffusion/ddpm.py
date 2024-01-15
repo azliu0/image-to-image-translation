@@ -42,8 +42,8 @@ class DDPMSampler:
     def _get_variance(self, timestep):
         prev_t = self._get_previous_timestep(timestep)
 
-        alpha_prod_t = self.alpha_cumprod[timestep]
-        alpha_prod_t_prev = self.alpha_cumprod[prev_t] if prev_t >= 0 else self.one
+        alpha_prod_t = self.alphas_cumprod[timestep]
+        alpha_prod_t_prev = self.alphas_cumprod[prev_t] if prev_t >= 0 else self.one
         current_alpha_t = alpha_prod_t / alpha_prod_t_prev
         current_beta_t = 1 - current_alpha_t
 
@@ -62,8 +62,8 @@ class DDPMSampler:
         # spam formulas from ddpm
         prev_t = self._get_previous_timestep(timestep)
 
-        alpha_prod_t = self.alpha_cumprod[timestep]
-        alpha_prod_t_prev = self.alpha_cumprod[prev_t] if prev_t >= 0 else self.one
+        alpha_prod_t = self.alphas_cumprod[timestep]
+        alpha_prod_t_prev = self.alphas_cumprod[prev_t] if prev_t >= 0 else self.one
         beta_prod_t = 1 - alpha_prod_t
         beta_prod_t_prev = 1 - alpha_prod_t_prev
         current_alpha_t = alpha_prod_t / alpha_prod_t_prev
@@ -89,17 +89,17 @@ class DDPMSampler:
         pred_prev_sample = pred_prev_sample + variance
 
     def add_noise(self, original_samples, timestep):
-        alpha_cumprod = self.alphas_cumprod.to(
+        alphas_cumprod = self.alphas_cumprod.to(
             device=original_samples.device, dtype=original_samples.dtype
         )
         timestep = timestep.to(original_samples.device)
 
-        sqrt_alpha_prod = alpha_cumprod[timestep] ** 0.5
+        sqrt_alpha_prod = alphas_cumprod[timestep] ** 0.5
         sqrt_alpha_prod = sqrt_alpha_prod.flatten()
         while len(sqrt_alpha_prod.shape) < len(original_samples.shape):
             sqrt_alpha_prod = sqrt_alpha_prod.unsqueeze(-1)
 
-        sqrt_one_minus_alpha_prod = (1 - alpha_cumprod[timestep]) ** 0.5
+        sqrt_one_minus_alpha_prod = (1 - alphas_cumprod[timestep]) ** 0.5
         sqrt_one_minus_alpha_prod = sqrt_one_minus_alpha_prod.flatten()
         while len(sqrt_one_minus_alpha_prod.shape) < len(original_samples.shape):
             sqrt_one_minus_alpha_prod = sqrt_one_minus_alpha_prod.unsqueeze(-1)
