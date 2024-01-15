@@ -5,7 +5,7 @@ date: December 25, 2023
 time: 5 min
 ---
 
-This website is a visualizer for InstructPix2Pix ([Brooks et al. 2022](https://arxiv.org/abs/2211.09800)), an image-to-image diffusion model that incorporates text as conditional guidance to the input. The base architecture is Stable Diffusion ([Rombach et al. 2021](https://arxiv.org/abs/2112.10752)) with some additional inference heuristics  inspired by Classifier-Free Guidance ([Ho et al. 2022](https://arxiv.org/abs/2207.12598)).
+This website is a visualizer and custom implementation of InstructPix2Pix ([Brooks et al. 2022](https://arxiv.org/abs/2211.09800)), an image-to-image diffusion model that incorporates text as conditional guidance to the input. The base architecture is Stable Diffusion ([Rombach et al. 2021](https://arxiv.org/abs/2112.10752)) with some additional inference heuristics  inspired by Classifier-Free Guidance ([Ho et al. 2022](https://arxiv.org/abs/2207.12598)).
 
 ## 0. Credit
 
