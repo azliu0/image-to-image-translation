@@ -217,7 +217,7 @@ $$
 \text{Cov}(x,y) = \begin{pmatrix}\Lambda + A^TLA & -A^TL \\ -LA & L\end{pmatrix}^{-1} = \begin{pmatrix}\Lambda^{-1} & \Lambda^{-1}A^T \\ A\Lambda^{-1} & L^{-1} + A\Lambda^{-1}A^T\end{pmatrix}.
 $$
 
-and thus 
+and thus
 
 $$
 \mathbb{E}(x,y) = \begin{pmatrix}\Lambda^{-1} & \Lambda^{-1}A^T \\ A\Lambda^{-1} & L^{-1} + A\Lambda^{-1}A^T\end{pmatrix}^{-1}\begin{pmatrix}\Lambda\mu -A^TLb \\ Lb\end{pmatrix} = \begin{pmatrix}\mu \\ A\mu + B\end{pmatrix}.
@@ -237,7 +237,7 @@ Like our result in [2.1](#2.1), this final expression is nice because it aligns 
 
 #### 2.3. KL Divergence
 
-The last thing we will examine is how to compute the KL divergence, or relative entropy, between two multivariate gaussians. The general expression is given by 
+The last thing we will examine is how to compute the KL divergence, or relative entropy, between two multivariate gaussians. The general expression is given by
 
 $$
 D_{KL}(P || Q) = \mathbb{E}_{x\sim p(x)}\left[\log \frac{p(x)}{q(x)}\right].
@@ -413,11 +413,61 @@ Eventually, our goal is not just to generate image from noise, but we would like
 
 #### 4.1 Classifier Guided
 
-The general approach is as follows. At each step during inference, we are trying to approximate $$\nabla_{x_t}\log q(x_t)$$. 
+The general approach is as follows. At each step during inference, we are trying to approximate $$\nabla_{x_t}\log q(x_t, y)$$, also known as the score function for the joint distribution for $$q(x_t, y)$$.
 
-We first consider the case when we have an external classifier $$f_{\phi}(y|x_t,t)$$.
+We first consider the case when we have an external classifier $$f_{\phi}(y|x_t,t)$$. We want to use the gradient of the classifier, $$\nabla_x \log f_{\phi}(y|x_t)$$ to alter the noise prediction based on our classifier in order to guide our diffusion process. Intuitively, taking the gradient of the classifier can essentially be described as calculating the log difference of the probabilities in two images at adjacent timesteps.
+
+Given our model $$\epsilon_{\theta}(x_t)$$ that predicts the amount of noise added in a sample from DDIM, we can see that
+
+$$
+\nabla_{x_t}\log q(x_t) = -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\epsilon_\theta(x_t, t)
+$$
+
+by taking the partial derivative of a normal distribution.
+
+Now, to approximate $$\nabla_{x_t}\log q(x_t)$$, we have
+
+$$
+\begin{align*}
+\nabla_{x_t}\log q(x_t, y) &= \nabla_{x_t}\log (q(x_t)q(y \vert x_t)) \\
+&=\nabla_{x_t}\log q(x_t) + \nabla_{x_t}\log q(y \vert x_t) \\
+&\approx -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\epsilon_\theta(x_t, t) + \nabla_x \log f_{\phi}(y|x_t) \\
+&= -\frac{1}{\sqrt{1-\overline{\alpha}_t}}(\epsilon_\theta(x_t, t) - \sqrt{1-\overline{\alpha}_t}\nabla_x \log f_{\phi}(y|x_t))
+\end{align*}
+$$
+
+We can then define a new noise predictor:
+
+$$
+\begin{align*}
+\overline{\epsilon}_\theta(x_t, t) = \epsilon_\theta(x_t, t) - \sqrt{1-\overline{\alpha}_t}\nabla_x \log f_{\phi}(y|x_t)
+\end{align*}
+$$
 
 #### 4.2 Classifier-free
+
+Without the classifier, we can instead incorporate our noise predictor $$\epsilon_\theta$$ from the conditional and unconditional diffusion model.
+
+We parameterize our unconditional diffusion model $$p_\theta(x)$$ with the noise predictor $$\epsilon_\theta(x_t, t)$$ and our conditional diffusion model $$p_\theta(x\vert y)$$ with the noise predictor $$\epsilon_\theta(x_t, t, y)$$. We can train them with the same neural net by using a paired data set $$(x, y)$$, where the class label $$y$$ is omitted in a portion of the training in order for the model to learn how to generate images unconditionally.
+
+Notice that without the gradient of the classifier, we just need to derive $$\nabla_{x_t}\log p(y \vert x_t)$$ from the above section. Representing it with the noise predictors above, we haveL
+
+$$
+\begin{align*}
+\nabla_{x_t}\log p(x_t, y) &= \nabla_{x_t}\log \frac{p(x_t \vert y)}{p(x_t)} \\
+&=\nabla_{x_t}\log p(x_t \vert y) - \nabla_{x_t} \log p(x_t) \\
+&= -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\left(\epsilon_\theta(x_t, t, y) -\epsilon_\theta(x_t, t)\right) \\
+\end{align*}
+$$
+
+Our new predictor then can be defined as:
+
+$$
+\begin{align*}
+\overline{\epsilon}_\theta(x_t, t, y) &= \epsilon_\theta(x_t, t, y) - \sqrt{1-\overline{\alpha}_t}\nabla_{x_t}\log p(x_t, y)\\
+&= \epsilon_\theta(x_t, t, y) + \left(\epsilon_\theta(x_t, t, y) - \epsilon_\theta(x_t, t)\right)
+\end{align*}
+$$
 
 <a id="final-conditional-objective"></a>
 
