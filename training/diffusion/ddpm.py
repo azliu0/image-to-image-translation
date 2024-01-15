@@ -87,6 +87,7 @@ class DDPMSampler:
             variance = self._get_variance(timestep) ** 0.5 * noise
 
         pred_prev_sample = pred_prev_sample + variance
+        return pred_prev_sample
 
     def add_noise(self, original_samples, timestep):
         alphas_cumprod = self.alphas_cumprod.to(
