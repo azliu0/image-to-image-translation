@@ -7,13 +7,13 @@ time: 2 min
 
 [under construction]
 
-This website is a visualizer for InstructPix2Pix ([Brooks et al. 2022](https://arxiv.org/abs/2211.09800)), an image-to-image diffusion model that incorporates text as conditional guidance to the input. The architecture uses a combination of text-to-image Stable Diffusion ([Rombach et al. 2021](https://arxiv.org/abs/2112.10752)) with OpenAI's text transformer GPT-3 ([Brown et al. 2020](https://arxiv.org/abs/2005.14165)).
+This website is a visualizer for InstructPix2Pix ([Brooks et al. 2022](https://arxiv.org/abs/2211.09800)), an image-to-image diffusion model that incorporates text as conditional guidance to the input. The base architecture is Stable Diffusion ([Rombach et al. 2021](https://arxiv.org/abs/2112.10752)) with some additional inference heuristics  based on Classifier-Free Guidance ([Ho et al. 2022](https://arxiv.org/abs/2207.12598)).
 
 The general capabilities of the model include being able to transform an input image, some input text, and generate a new image that is guided on both inputs.
 
 [perhaps insert a sample image here?]
 
-We train a few models from scratch that recreates the architecture in the original InstructPix2Pix paper, where the results of the models can be played around with in this website. Uploaded images should be square; if not, they are automatically cropped. On the backend, all images are transformed to 256x256 resolution, so images with 256x256 base resolution will generally work best. To seem some examples of simple images and prompts that seemed to produce decent results, check out the [gallery](/gallery).
+We implement the architecture in the original InstructPix2Pix paper, where the results of the models can be played around with in this website. Images with 512x512 base resolution will generally work best, since this is the. To seem some examples of simple images and prompts that seemed to produce decent results, check out the [gallery](/gallery).
 
 ## Model details
 
