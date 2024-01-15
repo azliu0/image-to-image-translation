@@ -454,7 +454,7 @@ Notice that without the gradient of the classifier, we just need to derive $$\na
 
 $$
 \begin{align*}
-\nabla_{x_t}\log p(x_t, y) &= \nabla_{x_t}\log \frac{p(x_t \vert y)}{p(x_t)} \\
+\nabla_{x_t}\log p(y \vert x_t) &= \nabla_{x_t}\log \frac{p(x_t \vert y)}{p(x_t)} \\
 &=\nabla_{x_t}\log p(x_t \vert y) - \nabla_{x_t} \log p(x_t) \\
 &= -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\left(\epsilon_\theta(x_t, t, y) -\epsilon_\theta(x_t, t)\right) \\
 \end{align*}
@@ -469,9 +469,24 @@ $$
 \end{align*}
 $$
 
+The ultimate objective for classifier free guidance is to improve the quality of images as well as their correspondence with the conditional class label. Intuitively, the gradient of $$p(y \vert x_t)$$ tries to maximize the likelihood of the condition $$y$$ in order to make images match with their corresponding label.
 <a id="final-conditional-objective"></a>
 
 ### 5. Modifying the conditional objective for Pix2Pix
+
+Using similar logic, we want to utilize classifier-free guidance with two conditionings, a previous image $$c_I$$ and the class label $$c_T$$.
+
+In [1](https://arxiv.org/abs/2211.09800), the authors chose to omit only $$c_I$$ in $$5\%$$ of examples, only $$c_T$$ in $$5\%$$ of examples, and both $$c_I$$ and $$c_T$$ in $$5\%$$ of examples. In classifier-free guidance, we can also introduce scaling factors $$s_1, s_2, \dots, s_n \geq 1$$ to adjust how strongly we want to the generated image to correlate with the conditionings.
+
+In our case, introducing $$s_I$$ and $$s_T$$ will adjust the strength of the class label condition and the input image condition. In turn, our predicted noise then becomes:
+
+$$
+\begin{align*}
+\overline{\epsilon}_\theta(x_t, c_I, c_T) &= \epsilon_\theta(x_t, \varnothing, \varnothing) + s_I(\epsilon_\theta(x_t, c_I, \varnothing) -  \epsilon_\theta(x_t, \varnothing, \varnothing)) + s_T(\epsilon_\theta(x_t, c_I, c_T) -  \epsilon_\theta(x_t, c_I, \varnothing))
+\end{align*}
+$$
+
+where the modified predictor can be extrapolated in the direction towards both conditionals.
 
 ## References
 
