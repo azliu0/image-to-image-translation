@@ -22,8 +22,8 @@ const MarkdownFormat = ({
         {"\u00A0" + `${date}` + "\u00A0"}
         <IoIosTime />
         {"\u00A0" + `${time}` + "\u00A0"}
-        <CgProfile />
-        {"\u00A0" + `${author}` + "\u00A0"}
+        {/* <CgProfile />
+        {"\u00A0" + `${author}` + "\u00A0"} */}
       </div>
       <div className={classes.markdownContent}>
         <Markdown children={content} />

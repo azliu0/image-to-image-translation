@@ -270,6 +270,9 @@ const RootPage = () => {
         <Center>
           <Button className={classes.genButton}>Generate</Button>
         </Center>
+        <div className={classes.footer}>
+          Made with ❤️ by Andrew Liu & Jack Chen
+        </div>
       </AnimatedPage>
     </>
   );

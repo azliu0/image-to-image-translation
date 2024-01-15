@@ -32,6 +32,12 @@ html {
 }
 }
 
+.footer {
+  font-size: 18px;
+  padding-bottom: 1.5rem;
+  text-align: center;
+}
+
 .referencesContainer{
   text-align: center;
   margin-right: 5px;

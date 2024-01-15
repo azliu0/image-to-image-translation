@@ -73,6 +73,9 @@ const Page = ({ mdPageLink, displayTitle }: PageInterface) => {
             )}
           </Flex>
         </Center>
+        <div className={classes.footer}>
+          Made with ❤️ by Andrew Liu & Jack Chen
+        </div>
       </AnimatedPage>
     </>
   );
