@@ -68,7 +68,7 @@ class UNET_ResidualBlock(nn.Module):
 class UNET_AttentionBlock(nn.Module):
     def __init__(self, n_head, n_embd, d_context=768):
         super().__init__()
-        channels = n_head * n_head
+        channels = n_head * n_embd
 
         self.groupnorm = nn.GroupNorm(32, channels, eps=1e-6)
         self.conv_input = nn.Conv2d(channels, channels, kernel_size=1, padding=0)
@@ -105,13 +105,13 @@ class UNET_AttentionBlock(nn.Module):
         #  self attention with skip connection
         residue_short = x
         x = self.layernorm_1(x)
-        self.attention_1(x)
+        x = self.attention_1(x)
         x += residue_short
         residue_short = x
 
         # cross attention with skip connection
         x = self.layernorm_2(x)
-        self.attention_2(x, context)
+        x = self.attention_2(x, context)
         x += residue_short
         residue_short = x
 
@@ -163,10 +163,10 @@ class UNET(nn.Module):
                 # (4 h/8, w/8) -> (320, h/8, w/8)
                 SwitchSequential(nn.Conv2d(4, 320, kernel_size=3, padding=1)),
                 SwitchSequential(
-                    UNET_residualBlock(320, 320), UNET_AttentionBlock(8, 40)
+                    UNET_ResidualBlock(320, 320), UNET_AttentionBlock(8, 40)
                 ),
                 SwitchSequential(
-                    UNET_residualBlock(320, 320), UNET_AttentionBlock(8, 40)
+                    UNET_ResidualBlock(320, 320), UNET_AttentionBlock(8, 40)
                 ),
                 # (320, h/16, w/16)
                 SwitchSequential(
@@ -208,7 +208,7 @@ class UNET(nn.Module):
                 # (1280*2, h/64, w/64), due to skip connections
                 SwitchSequential(UNET_ResidualBlock(2560, 1280)),
                 SwitchSequential(UNET_ResidualBlock(2560, 1280)),
-                SwitchSequential(UNET_ResidualBlock(2560, 1280), UpSample(1280)),
+                SwitchSequential(UNET_ResidualBlock(2560, 1280), Upsample(1280)),
                 SwitchSequential(
                     UNET_ResidualBlock(2560, 1280), UNET_AttentionBlock(8, 160)
                 ),
@@ -218,7 +218,7 @@ class UNET(nn.Module):
                 SwitchSequential(
                     UNET_ResidualBlock(1920, 1280),
                     UNET_AttentionBlock(8, 160),
-                    UpSample(1280),
+                    Upsample(1280),
                 ),
                 SwitchSequential(
                     UNET_ResidualBlock(1920, 640), UNET_AttentionBlock(8, 80)
@@ -229,7 +229,7 @@ class UNET(nn.Module):
                 SwitchSequential(
                     UNET_ResidualBlock(960, 640),
                     UNET_AttentionBlock(8, 80),
-                    UpSample(640),
+                    Upsample(640),
                 ),
                 SwitchSequential(
                     UNET_ResidualBlock(960, 320), UNET_AttentionBlock(8, 40)
