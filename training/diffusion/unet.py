@@ -195,41 +195,51 @@ class UNET(nn.Module):
     def __init__(self):
         super().__init__()
 
+        # the #s in front of each comment represent corresponding skip connections
+
         self.encoders = nn.Module(
             [
-                # (4 h/8, w/8) -> (320, h/8, w/8)
+                # 12. (4, h/8, w/8) -> (320, h/8, w/8)
                 SwitchSequential(nn.Conv2d(4, 320, kernel_size=3, padding=1)),
+                # 11. (320, h/8, w/8)
                 SwitchSequential(
                     UNET_ResidualBlock(320, 320), UNET_AttentionBlock(8, 40)
                 ),
+                # 10. (320, h/8, w/8)
                 SwitchSequential(
                     UNET_ResidualBlock(320, 320), UNET_AttentionBlock(8, 40)
                 ),
-                # (320, h/16, w/16)
+                # 9. (320, h/8, w/8) -> (320, h/16, w/16)
                 SwitchSequential(
                     nn.Conv2d(320, 320, kernel_size=3, stride=2, padding=1)
                 ),
+                # 8. (320, h/16, w/16)
                 SwitchSequential(
                     UNET_ResidualBlock(320, 640), UNET_AttentionBlock(8, 80)
                 ),
+                # 7. (320, h/16, w/16)
                 SwitchSequential(
                     UNET_ResidualBlock(640, 640), UNET_AttentionBlock(8, 80)
                 ),
-                # (640, h/32, w/32)
+                # 6. (320, h/16, w/16) -> (640, h/32, w/32)
                 SwitchSequential(
                     nn.Conv2d(640, 640, kernel_size=3, stride=2, padding=1)
                 ),
+                # 5. (640, h/32, w/32)
                 SwitchSequential(
                     UNET_ResidualBlock(640, 1280), UNET_AttentionBlock(8, 160)
                 ),
+                # 4. (640, h/32, w/32)
                 SwitchSequential(
                     UNET_ResidualBlock(1280, 1280), UNET_AttentionBlock(8, 160)
                 ),
-                # (1280, h/64, w/64)
+                # 3. (640, h/32, w/32) -> (1280, h/64, w/64)
                 SwitchSequential(
                     nn.Conv2d(1280, 1280, kernel_size=3, stride=2, padding=1)
                 ),
+                # 2. (1280, h/64, w/64)
                 SwitchSequential(UNET_ResidualBlock(1280, 1280)),
+                # 1. (1280, h/64, w/64)
                 SwitchSequential(UNET_ResidualBlock(1280, 1280)),
             ]
         )
@@ -242,38 +252,70 @@ class UNET(nn.Module):
 
         self.decoders = nn.ModuleList(
             [
-                # (1280*2, h/64, w/64), due to skip connections
+                # 1. (1280*2, h/64, w/64), due to skip connections
                 SwitchSequential(UNET_ResidualBlock(2560, 1280)),
+                # 2. (1280*2, h/64, w/64)
                 SwitchSequential(UNET_ResidualBlock(2560, 1280)),
+                # 3. (1280*2, h/32, w/32)
                 SwitchSequential(UNET_ResidualBlock(2560, 1280), Upsample(1280)),
+                # 4.
                 SwitchSequential(
                     UNET_ResidualBlock(2560, 1280), UNET_AttentionBlock(8, 160)
                 ),
+                # 5.
                 SwitchSequential(
                     UNET_ResidualBlock(2560, 1280), UNET_AttentionBlock(8, 160)
                 ),
+                # 6.
+                # skip connections: (640, h/32, w/32)
+                # inputs: (1280, h/32, w/32)
+                # final output: (1280, h/16, w/16)
                 SwitchSequential(
                     UNET_ResidualBlock(1920, 1280),
                     UNET_AttentionBlock(8, 160),
                     Upsample(1280),
                 ),
+                # 7.
+                # skip connections: (640, h/16, w/16)
+                # inputs: (1280, h/16, w/16)
+                # final output: (640, h/16, w/16)
                 SwitchSequential(
                     UNET_ResidualBlock(1920, 640), UNET_AttentionBlock(8, 80)
                 ),
+                # 8.
+                # skip connections: (640, h/16, w/16)
+                # inputs: (640, h/16, w/16)
+                # final output: (640, h/16, w/16)
                 SwitchSequential(
                     UNET_ResidualBlock(1280, 640), UNET_AttentionBlock(8, 80)
                 ),
+                # 9.
+                # skip connections: (320, h/16, w/16)
+                # inputs: (640, h/16, w/16)
+                # final output: (640, h/8, w/8)
                 SwitchSequential(
                     UNET_ResidualBlock(960, 640),
                     UNET_AttentionBlock(8, 80),
                     Upsample(640),
                 ),
+                # 10.
+                # skip connections: (320, h/8, w/8)
+                # inputs: (640, h/8, w/8)
+                # final output: (320, h/8, w/8)
                 SwitchSequential(
                     UNET_ResidualBlock(960, 320), UNET_AttentionBlock(8, 40)
                 ),
+                # 11.
+                # skip connections: (320, h/8, w/8)
+                # inputs: (320, h/8, w/8)
+                # final output: (320, h/8, w/8)
                 SwitchSequential(
                     UNET_ResidualBlock(640, 320), UNET_AttentionBlock(8, 40)
                 ),
+                # 12.
+                # skip connections: (320, h/8, w/8)
+                # inputs: (320, h/8, w/8)
+                # final output: (320, h/8, w/8)
                 SwitchSequential(
                     UNET_ResidualBlock(640, 320), UNET_AttentionBlock(8, 40)
                 ),
