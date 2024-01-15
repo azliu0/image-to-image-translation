@@ -29,18 +29,12 @@ Training details...
 
 ## Website details
 
-[under construction]
+This website was built from scratch. The main frontend framework was [React](https://react.dev/), and we had some fun integrating libraries like [Mantine UI](https://mantine.dev/) and [Framer Motion](https://www.framer.com/motion/) for styling quirks. We used [react-markdown](https://github.com/remarkjs/react-markdown) for markdown parsing, along with [remark-math](https://www.npmjs.com/package/remark-math) and [react-katex](https://www.npmjs.com/package/react-katex) to handling $$\LaTeX$$ parsing inside of markdown.
 
-This website was built from scratch. The main frontend framework was [React](https://react.dev/), and we had some fun integrating libraries like [Mantine UI](https://mantine.dev/) and [Framer Motion](https://www.framer.com/motion/) for styling quirks. We used [react-markdown](https://github.com/remarkjs/react-markdown) for markdown parsing.
+The backend is [Flask](https://flask.palletsprojects.com/en/3.0.x/). For the purposes of keeping things simple, we decided not to deploy our model to any endpoints and instead all of the inference is done on the deployment server. This would not cause any issues if we had the funds for a GPU on the server; unfortunately, we do not, hence an issue is that loading images can take on the order of minutes. For the time being, we don't have plans to fix this issue, since it seems like anything that costs money will end up costing too much to keep this website running for a very long period of time.
 
-[backend??]. We faced some challenges deploying the models.
-
-Feel free to check out our [repository](https://github.com/azliu0/image-to-image-translation).
+We used [Render](https://render.com/) for deployment. Feel free to check out our [repository](https://github.com/azliu0/image-to-image-translation)!
 
 ## Conclusion
 
-[under construction]
-
 This was a very fulfulling winter break project for us, since we are both very interested in generative modelling and excited about its potential. We are glad to have gained some experience understanding these models at a deeper level. We also found the creation of this website to be a good exercise of our web development skills.
-
-[how good are the models?...]
