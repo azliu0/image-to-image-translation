@@ -2,13 +2,20 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from attention import SelfAttention
+from ..config import MAX_SEQ_LENGTH, TOKEN_EMBEDDING_SIZE, VOCAB_SIZE
 
 
 class CLIPEmbedding(nn.Module):
     def __init__(self, n_vocab: int, n_embd: int, n_token: int):
         super().__init__()
 
+        # n_vocab: size of vocab in tokens
+        # n_embd: size of each token embedding
+        # n_token: number of tokens to parse in the sequence. default max is given by MAX_SEQ_LENGTH
+
+        # maps n_vocab token keys -> n_embd size embedding vector
         self.token_embedding = nn.Embedding(n_vocab, n_embd)
+        # maps n_token positions -> n_embd size positional embedding vector
         self.position_embedding = nn.Parameter(torch.zeros((n_token, n_embd)))
 
     def forward(self, tokens):
@@ -16,7 +23,7 @@ class CLIPEmbedding(nn.Module):
 
         # (seq, dim)
         x = self.token_embedding(tokens)
-        # (Batch_Size, Seq_Len) -> (Batch_Size, Seq_Len, Dim)
+        # (seq, dim)
         x += self.position_embedding
 
         return x
@@ -28,10 +35,13 @@ class CLIPLayer(nn.Module):
 
         # Norm1
         self.layernorm_1 = nn.LayerNorm(n_embd)
+
         # Self Attention Head!
         self.attention = SelfAttention(n_head, n_embd)
+
         # Norm2
         self.layernorm_2 = nn.LayerNorm(n_embd)
+
         # FFNN
         self.linear_1 = nn.Linear(n_embd, 4 * n_embd)
         self.linear_2 = nn.Linear(4 * n_embd, n_embd)
@@ -75,11 +85,13 @@ class CLIPLayer(nn.Module):
 class CLIP(nn.Module):
     def __init__(self):
         super().__init__()
-        self.embedding = CLIPEmbedding(49408, 768, 77)
+        self.embedding = CLIPEmbedding(VOCAB_SIZE, TOKEN_EMBEDDING_SIZE, MAX_SEQ_LENGTH)
 
-        self.layers = nn.ModuleList([CLIPLayer(12, 768) for i in range(12)])
+        self.layers = nn.ModuleList(
+            [CLIPLayer(12, TOKEN_EMBEDDING_SIZE) for i in range(12)]
+        )
 
-        self.layernorm = nn.LayerNorm(768)
+        self.layernorm = nn.LayerNorm(TOKEN_EMBEDDING_SIZE)
 
     def forward(self, tokens: torch.LongTensor) -> torch.FloatTensor:
         # tokens: (seq)

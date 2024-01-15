@@ -20,17 +20,27 @@ class TimeEmbedding(nn.Module):
 class UNET_ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, n_time=1280):
         super().__init__()
+
+        # group norm
         self.groupnorm_feature = nn.GroupNorm(32, in_channels)
+
+        # conv layer
         self.conv_feature = nn.Conv2d(
             in_channels, out_channels, kernel_size=3, padding=1
         )
+
+        # time layer
         self.linear_time = nn.Linear(n_time, out_channels)
 
+        # group norm for merged time+feature vector
         self.groupnorm_merged = nn.GroupNorm(32, out_channels)
+
+        # conv layer for merged time+feature vector
         self.conv_merged = nn.Conv2d(
             out_channels, out_channels, kernel_size=3, padding=1
         )
 
+        # final residual layer to ensure that residue has the same number of channels as output
         if in_channels == out_channels:
             self.residual_layer = nn.Identity()
         else:
@@ -39,29 +49,39 @@ class UNET_ResidualBlock(nn.Module):
             )
 
     def forward(self, feature, time):
-        # feature: (h,w)
+        # feature: (in_channels,h,w)
         # time: (1, 1280)
 
         residue = feature
 
+        # (in_channels,h,w)
         feature = self.groupnorm_feature(feature)
 
+        # (in_channels,h,w)
         feature = F.silu(feature)
 
+        # (out_channels,h,w)
         feature = self.conv_feature(feature)
 
+        # (1280)
         time = F.silu(time)
 
+        # (out_channels)
         time = self.linear_time(time)
 
+        # (out_channels,h,w)
         merged = feature + time.unsqueeze(-1).unsqueeze(-1)
 
+        # (out_channels,h,w)
         merged = self.groupnorm_merged(merged)
 
+        # (out_channels,h,w)
         merged = F.silu(merged)
 
+        # (out_channels,h,w)
         merged = self.conv_merged(merged)
 
+        # join residue
         return merged + self.residual_layer(residue)
 
 
@@ -97,9 +117,9 @@ class UNET_AttentionBlock(nn.Module):
 
         n, c, h, w = x.shape
 
-        # (batch, c, h, w) -> (batch, c, h*w)
+        # (c, h, w) -> (c, h*w)
         x = x.view((n, c, h * w))
-        # (batch, c, h*w) -> (batch, h*w, c)
+        # (c, h*w) -> (h*w, c)
         x = x.transpose(-1, -2)
 
         #  self attention with skip connection
@@ -107,15 +127,15 @@ class UNET_AttentionBlock(nn.Module):
         x = self.layernorm_1(x)
         x = self.attention_1(x)
         x += residue_short
-        residue_short = x
 
         # cross attention with skip connection
+        residue_short = x
         x = self.layernorm_2(x)
         x = self.attention_2(x, context)
         x += residue_short
-        residue_short = x
 
         # FF with geglu and skip connection
+        residue_short = x
         x = self.layernorm_3(x)
 
         x, gate = self.linear_geglu_1(x).chunk(2, dim=-1)
