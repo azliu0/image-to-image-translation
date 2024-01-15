@@ -19,6 +19,9 @@ class VAE_AttentionBlock(nn.Module):
     def forward(self, x):
         residue = x
 
+        # (c,h,w)
+        x = self.groupnorm(x)
+
         n, c, h, w = x.shape
 
         # (c,h,w) -> (c,h*w)
