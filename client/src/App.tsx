@@ -12,6 +12,7 @@ export interface PageInterface {
 const pages: Array<PageInterface> = [
   { mdPageLink: "../md/details.md", displayTitle: "Details" },
   { mdPageLink: "../md/gallery.md", displayTitle: "Gallery" },
+  { mdPageLink: "../md/math.md", displayTitle: "Math" },
 ];
 
 const App = () => {

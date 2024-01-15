@@ -127,6 +127,10 @@ const RootPage = () => {
             Details
           </Anchor>
           <p className={classes.reference}> | </p>
+          <Anchor href="/math" className={classes.reference}>
+            Math
+          </Anchor>
+          <p className={classes.reference}> | </p>
           <Anchor href="/gallery" className={classes.reference}>
             Gallery
           </Anchor>
