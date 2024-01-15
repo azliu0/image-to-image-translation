@@ -146,18 +146,25 @@ class UNET_AttentionBlock(nn.Module):
 
         # FF with geglu and skip connection
         residue_short = x
+        # (h*w,c)
         x = self.layernorm_3(x)
-
+        # (h*w,c) -> 2*(h*w,c)
         x, gate = self.linear_geglu_1(x).chunk(2, dim=-1)
+        # (h*w,c)
         x = x * F.gelu(gate)
 
+        # (h*w,c)
         x = self.linear_geglu_2(x)
+        # (h*w,c)
         x += residue_short
 
+        # (c,h*w), undoing original transpose
         x = x.transpose(-1, -2)
 
+        # (c,h,w)
         x = x.view((n, c, h, w))
 
+        # add back long residual
         return self.conv_output(x) + residue_long
 
 
