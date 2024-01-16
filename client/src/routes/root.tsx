@@ -15,10 +15,12 @@ import {
   Select,
   TextInput,
   MantineTheme,
+  NumberInput,
   //SimpleGrid,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
+import { IoSettingsOutline } from "react-icons/io5";
 import {
   Dropzone,
   IMAGE_MIME_TYPE,
@@ -37,11 +39,21 @@ interface FullModel {
 type ModelSelect = Optional<FullModel, "disabled">;
 
 const RootPage = () => {
-  const [model, setModel] = useState<string | null>(null);
+  // ui states
   const [isHoveredRight, setIsHoveredRight] = useState<boolean>(false);
   const [imageSelected, setImageSelected] = useState(false);
+  const [hiddenSettings, setHiddenSettings] = useState(true);
+
+  // model states
+  const [model, setModel] = useState<string | null>(null);
   const [files, setFiles] = useState<Array<FileWithPath>>([]);
   const [prompt, setPrompt] = useState<string>("");
+  const [inferenceSteps, setInferenceSteps] = useState<string | number>(50);
+  const [temperature, setTemperature] = useState<string | number>(0.7);
+  const [CFG, setCFG] = useState<string | number>(7);
+  const [negativePrompt, setNegativePrompt] = useState<string | number>(7);
+
+  // error states
   const [errorModel, setErrorModel] = useState<boolean | String>(false);
   const [errorPrompt, setErrorPrompt] = useState<boolean | String>(false);
 
@@ -135,16 +147,17 @@ const RootPage = () => {
         withCloseButton: false,
         autoClose: false,
       });
-    } else {
-      // notifications.show({
-      //   title: "submitting",
-      //   message: "submitting",
-      //   loading: true,
-      //   withCloseButton: false,
-      //   autoClose: false,
-      // });
+      const body = {
+        model,
+        files,
+        prompt,
+        inferenceSteps,
+        temperature,
+        CFG,
+        negativePrompt,
+      };
+      console.log(body);
     }
-    console.log(files);
   };
 
   return (
@@ -326,7 +339,49 @@ const RootPage = () => {
             }}
           />
         </Center>
-        <Center>
+        {!hiddenSettings && (
+          <>
+            <Center style={{ marginTop: "-2rem" }}>
+              <TextInput
+                label="Negative Prompt:"
+                placeholder="Negative Prompt"
+                className={classes.textInput}
+                onChange={(e) => setNegativePrompt(e.target.value)}
+              />
+            </Center>
+
+            <Center>
+              <NumberInput
+                label="Inference steps"
+                value={inferenceSteps}
+                onChange={setInferenceSteps}
+                min={2}
+                max={1000}
+                allowDecimal={false}
+                style={{ paddingRight: "1rem" }}
+              />
+              <NumberInput
+                label="Temperature"
+                value={temperature}
+                onChange={setTemperature}
+                decimalScale={1}
+                step={0.1}
+                min={0.2}
+                max={1.0}
+                style={{ paddingRight: "1rem" }}
+              />
+              <NumberInput
+                label="CFG"
+                value={CFG}
+                onChange={setCFG}
+                min={1}
+                max={14}
+                allowDecimal={false}
+              />
+            </Center>
+          </>
+        )}
+        <div className={classes.buttons}>
           <Button
             className={classes.genButton}
             onClick={handleGenerate}
@@ -334,7 +389,16 @@ const RootPage = () => {
           >
             {files.length ? "Generate" : "Upload an image to modify! "}
           </Button>
-        </Center>
+          <Button
+            className={classes.genButton}
+            onClick={() => setHiddenSettings(!hiddenSettings)}
+            leftSection={<IoSettingsOutline size={18} />}
+            style={{ width: "auto", marginLeft: "1rem" }}
+            variant="light"
+          >
+            {hiddenSettings ? "Show settings" : "Close settings"}
+          </Button>
+        </div>
         <div className={classes.footer}>
           Made with ❤️ by Andrew Liu & Jack Chen
         </div>

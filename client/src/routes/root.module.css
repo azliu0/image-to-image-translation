@@ -34,8 +34,7 @@ html {
 
 .footer {
   font-size: 16px;
-  padding-bottom: 1.5rem;
-  margin-top: -1rem;
+  padding-bottom: 3rem;
   text-align: center;
 }
 
@@ -202,4 +201,10 @@ html {
   height: 512px;
   display: flex;
   justify-content: center;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  height: 10rem;
 }
