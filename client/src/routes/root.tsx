@@ -33,6 +33,7 @@ type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 interface FullModel {
   value: string;
   label: string;
+  cfg: boolean;
   disabled: boolean | undefined;
 }
 
@@ -59,21 +60,34 @@ const RootPage = () => {
   const [errorPrompt, setErrorPrompt] = useState<boolean | String>(false);
 
   const models: Array<ModelSelect> = [
-    { value: "pix2pix-base", label: "pix2pix-base" },
+    { value: "pix2pix-base", label: "pix2pix-base", cfg: true },
     {
       value: "pix2pix-full-no-cfg-no-ddim",
       label: "pix2pix-full-no-cfg-no-ddim",
+      cfg: false,
     },
-    { value: "pix2pix-1", label: "pix2pix-1 (available soon)", disabled: true },
-    { value: "pix2pix-2", label: "pix2pix-2 (available soon)", disabled: true },
+    {
+      value: "pix2pix-1",
+      label: "pix2pix-1 (available soon)",
+      cfg: false,
+      disabled: true,
+    },
+    {
+      value: "pix2pix-2",
+      label: "pix2pix-2 (available soon)",
+      cfg: false,
+      disabled: true,
+    },
     {
       value: "pix2pix-full",
       label: "pix2pix-full (available soon)",
+      cfg: true,
       disabled: true,
     },
     {
       value: "pix2pix-full-no-ddim",
       label: "pix2pix-full-no-ddim (available soon)",
+      cfg: true,
       disabled: true,
     },
   ];
@@ -432,6 +446,9 @@ const RootPage = () => {
                 min={1}
                 max={14}
                 allowDecimal={false}
+                disabled={
+                  !models.find((modelType) => modelType.value === model)?.cfg
+                }
               />
             </Flex>
           </>
