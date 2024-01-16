@@ -18,7 +18,8 @@ def create_app():
             app, origins=app.config.get("ALLOWED_DOMAINS"), supports_credentials=True
         )
 
-        api = Blueprint("api", __name__, url_prefix="/api")
+        from server.api import api
+
         app.register_blueprint(api)
 
     return app

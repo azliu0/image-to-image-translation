@@ -134,7 +134,7 @@ const RootPage = () => {
   };
 
   const handleDrop = (files: Array<FileWithPath>) => {
-    setFiles(files);
+    setFiles([files[0]]);
     setImageSelected(true);
   };
 
@@ -164,14 +164,22 @@ const RootPage = () => {
       });
       const body = {
         model,
-        files,
         prompt,
+        files,
         inferenceSteps,
         temperature,
         CFG,
         negativePrompt,
       };
-      console.log(body);
+      fetch("/api/inference", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }).then((res) => {
+        console.log(res);
+      });
     }
   };
 
