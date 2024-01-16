@@ -35,15 +35,11 @@ Images with 512x512 base resolution will generally work best, since this is the 
 
 [strength, cfg factor...]
 
-## 2. Model details
-
-[detail model architecture...]
-
 ## 3. Website details
 
 This website was built from scratch. The main frontend framework was [React](https://react.dev/), and we had some fun integrating libraries like [Mantine UI](https://mantine.dev/) and [Framer Motion](https://www.framer.com/motion/) for styling quirks. We used [react-markdown](https://github.com/remarkjs/react-markdown) for markdown parsing, along with [remark-math](https://www.npmjs.com/package/remark-math) and [react-katex](https://www.npmjs.com/package/react-katex) to handling $$\LaTeX$$ parsing inside of markdown.
 
-The backend is [Flask](https://flask.palletsprojects.com/en/3.0.x/). For the purposes of keeping things simple, we decided not to deploy our model to any endpoints and instead all of the inference is done on the deployment server. This would not cause any issues if we had the funds for a GPU on the server; unfortunately, we do not, hence an issue is that loading images can take on the order of minutes. For the time being, we don't have plans to fix this issue, since it seems like anything that costs money will end up costing too much to keep this website running for a very long period of time.
+The backend is [Flask](https://flask.palletsprojects.com/en/3.0.x/). For the purposes of keeping things simple, we decided not to deploy our model to any endpoints and instead all of the inference is done on the deployment server. If we had the funds for a GPU on the server, this would be OK; unfortunately, we do not, so inference is quite slow. For the time being, we don't have plans to fix this issue, since it seems like anything that costs money will end up costing too much to keep this website running for a very long period of time.
 
 We used [Render](https://render.com/) for deployment. Feel free to check out our [repository](https://github.com/azliu0/image-to-image-translation)!
 

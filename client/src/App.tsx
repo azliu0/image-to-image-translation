@@ -13,6 +13,7 @@ const pages: Array<PageInterface> = [
   { mdPageLink: "../md/details.md", displayTitle: "Details" },
   { mdPageLink: "../md/gallery.md", displayTitle: "Gallery" },
   { mdPageLink: "../md/math.md", displayTitle: "Math" },
+  { mdPageLink: "../md/models.md", displayTitle: "Models" },
 ];
 
 const App = () => {

@@ -43,7 +43,6 @@ const RootPage = () => {
   const [files, setFiles] = useState<Array<FileWithPath>>([]);
   const [prompt, setPrompt] = useState<string>("");
   const [errorModel, setErrorModel] = useState<boolean | String>(false);
-  const [errorFile, setErrorFile] = useState<boolean | String>(false);
   const [errorPrompt, setErrorPrompt] = useState<boolean | String>(false);
 
   const models: Array<ModelSelect> = [
@@ -118,10 +117,6 @@ const RootPage = () => {
       setErrorModel("select a model!");
       hasErrors = true;
     }
-    if (files.length === 0) {
-      setErrorFile("upload an image!");
-      hasErrors = true;
-    }
     if (prompt.length === 0) {
       setErrorPrompt("enter a non-empty prompt!");
       hasErrors = true;
@@ -131,7 +126,6 @@ const RootPage = () => {
 
   const handleGenerate = (): void => {
     notifications.clean();
-    console.log(model, files, prompt);
     const hasErrors = checkErrors();
     if (!hasErrors) {
       notifications.show({
@@ -178,6 +172,10 @@ const RootPage = () => {
           <p className={classes.reference}> | </p>
           <Anchor href="/math" className={classes.reference}>
             Math
+          </Anchor>
+          <p className={classes.reference}> | </p>
+          <Anchor href="/models" className={classes.reference}>
+            Models
           </Anchor>
           <p className={classes.reference}> | </p>
           <Anchor href="/gallery" className={classes.reference}>

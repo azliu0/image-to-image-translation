@@ -30,8 +30,8 @@ prompt = "turn him into cyborg"
 images = pipe(
     prompt,
     image=image,
-    num_inference_steps=10,
-    image_guidance_scale=1,
+    num_inference_steps=50,
+    image_guidance_scale=1.5,
 ).images
 
 images[0].save("output.jpg")

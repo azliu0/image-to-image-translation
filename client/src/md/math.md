@@ -1,5 +1,5 @@
 ---
-title: Math Behind the Models
+title: The Math Behind the Models
 author: Jack Chen and Andrew Liu
 date: January 9, 2023
 time: 30 min
