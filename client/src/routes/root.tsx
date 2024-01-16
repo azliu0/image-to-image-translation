@@ -17,6 +17,7 @@ import {
   MantineTheme,
   //SimpleGrid,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import {
   Dropzone,
@@ -38,16 +39,29 @@ type ModelSelect = Optional<FullModel, "disabled">;
 const RootPage = () => {
   const [model, setModel] = useState<string | null>(null);
   const [isHoveredRight, setIsHoveredRight] = useState<boolean>(false);
+  const [imageSelected, setImageSelected] = useState(false);
+  const [files, setFiles] = useState<Array<FileWithPath>>([]);
+  const [prompt, setPrompt] = useState<string>("");
+  const [errorModel, setErrorModel] = useState<boolean | String>(false);
+  const [errorFile, setErrorFile] = useState<boolean | String>(false);
+  const [errorPrompt, setErrorPrompt] = useState<boolean | String>(false);
 
   const models: Array<ModelSelect> = [
     { value: "pix2pix-base", label: "pix2pix-base" },
+    {
+      value: "pix2pix-full-no-cfg-no-ddim",
+      label: "pix2pix-full-no-cfg-no-ddim",
+    },
     { value: "pix2pix-1", label: "pix2pix-1 (available soon)", disabled: true },
     { value: "pix2pix-2", label: "pix2pix-2 (available soon)", disabled: true },
-    { value: "pix2pix-3", label: "pix2pix-3 (available soon)", disabled: true },
-    { value: "pix2pix-4", label: "pix2pix-4 (available soon)", disabled: true },
     {
       value: "pix2pix-full",
       label: "pix2pix-full (available soon)",
+      disabled: true,
+    },
+    {
+      value: "pix2pix-full-no-ddim",
+      label: "pix2pix-full-no-ddim (available soon)",
       disabled: true,
     },
   ];
@@ -70,14 +84,6 @@ const RootPage = () => {
     else return "#ffffff";
   }
 
-  // const blah = document.getElementById("blah") as HTMLImageElement;
-  // function readURL(files: FileWithPath[]) {
-  //   if (files) {
-  //     const convertedFile = files as Blob;
-  //     blah.src = URL.createObjectURL(files);
-  //   }
-  // }
-
   const handleMouseEnterRight = () => {
     setIsHoveredRight(true);
   };
@@ -85,8 +91,6 @@ const RootPage = () => {
   const handleMouseLeaveRight = () => {
     setIsHoveredRight(false);
   };
-  const [imageSelected, setImageSelected] = useState(false);
-  const [files, setFiles] = useState<Array<FileWithPath>>([]);
 
   const previews = (files: Array<FileWithPath>) => {
     const imageUrl = URL.createObjectURL(files[0]);
@@ -107,6 +111,48 @@ const RootPage = () => {
     setFiles(files);
     setImageSelected(true);
   };
+
+  const checkErrors = (): boolean => {
+    let hasErrors = false;
+    if (model === null) {
+      setErrorModel("select a model!");
+      hasErrors = true;
+    }
+    if (files.length === 0) {
+      setErrorFile("upload an image!");
+      hasErrors = true;
+    }
+    if (prompt.length === 0) {
+      setErrorPrompt("enter a non-empty prompt!");
+      hasErrors = true;
+    }
+    return hasErrors;
+  };
+
+  const handleGenerate = (): void => {
+    notifications.clean();
+    console.log(model, files, prompt);
+    const hasErrors = checkErrors();
+    if (!hasErrors) {
+      notifications.show({
+        title: "uploading to server",
+        message: "submitting image...",
+        loading: true,
+        withCloseButton: false,
+        autoClose: false,
+      });
+    } else {
+      // notifications.show({
+      //   title: "submitting",
+      //   message: "submitting",
+      //   loading: true,
+      //   withCloseButton: false,
+      //   autoClose: false,
+      // });
+    }
+    console.log(files);
+  };
+
   return (
     <>
       <AnimatedPage>
@@ -148,12 +194,17 @@ const RootPage = () => {
         </Center>
         <Center>
           <Select
-            label="Select a model..."
+            label="Select a model:"
             placeholder="Select a model"
+            withAsterisk
             data={models}
             value={model}
-            onChange={setModel}
+            onChange={(model) => {
+              setModel(model);
+              setErrorModel(false);
+            }}
             className={classes.modelSelection}
+            error={errorModel}
           />
         </Center>
         <Flex justify="center" gap={30} wrap="wrap">
@@ -270,10 +321,21 @@ const RootPage = () => {
             placeholder="Input Prompt"
             withAsterisk
             className={classes.textInput}
+            error={errorPrompt}
+            onChange={(e) => {
+              setPrompt(e.target.value);
+              setErrorPrompt(false);
+            }}
           />
         </Center>
         <Center>
-          <Button className={classes.genButton}>Generate</Button>
+          <Button
+            className={classes.genButton}
+            onClick={handleGenerate}
+            disabled={files.length === 0}
+          >
+            {files.length ? "Generate" : "Upload an image to modify! "}
+          </Button>
         </Center>
         <div className={classes.footer}>
           Made with ❤️ by Andrew Liu & Jack Chen

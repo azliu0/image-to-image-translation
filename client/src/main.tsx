@@ -1,7 +1,9 @@
 import * as ReactDOM from "react-dom/client";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
+import "@mantine/notifications/styles.css";
 import { MantineProvider, createTheme } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import App from "./App";
 
@@ -17,6 +19,7 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <>
     <MantineProvider theme={theme} defaultColorScheme="dark">
+      <Notifications />
       <Router>
         <Routes>
           <Route path="*" element={<App />} />

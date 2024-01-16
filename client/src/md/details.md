@@ -29,7 +29,7 @@ The general capabilities of the model include being able to transform an input i
 
 ### Image resolution
 
-Images with 512x512 base resolution will generally work best, since this is the default resolution that is supported by our custom model. To seem some examples of simple images and prompts that seemed to produce decent results, check out the [gallery](/gallery).
+Images with 512x512 base resolution will generally work best, since this is the default resolution that is supported by our model. Images that are other sizes will be automatically compressed or expanded into a 512x512 output image. To see some examples of simple images and prompts that seemed to produce decent results, check out the [gallery](/gallery).
 
 ### Other parameters
 
