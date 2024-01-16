@@ -44,7 +44,7 @@ Images with 512x512 base resolution will generally work best, since this is the 
 
 - **Temperature** (min: 0.1, max: 1, float): temperature represents the strength of the diffusion model, compared to the reference image. a temperature of 1 indicates that the diffusion model is acting independently of the input image, while lower temperatures will produce results closer to the reference image.
 
-- **CFG** (min: 1, max: 14, int): this parameter is only available for models that use Context-Free Guidance. higher values indicate that the score for the contextualized inputs should be weighted higher, e.g., higher values give more power to the captions (both positive and negative); conversely, lower values will give more power to the diffusion model.
+- **CFG** (min: 1, max: 14, int): this parameter is only available for models that use Classifier-Free Guidance. higher values indicate that the score for the contextualized inputs should be weighted higher. In other words, a high CFG scale gives more power to the captions (both positive and negative), while lower values will give more power to the diffusion model.
 
 ## 3. Website details
 
