@@ -36,6 +36,7 @@ html {
   font-size: 16px;
   padding-bottom: 3rem;
   text-align: center;
+  margin-top: 5rem;
 }
 
 .referencesContainer{
@@ -43,6 +44,10 @@ html {
   margin-right: 5px;
   padding-right: 5px;
   padding-left: 5px;
+}
+
+.reduceMargin{
+  margin-top: -3rem;
 }
 
 .reference{
@@ -121,13 +126,23 @@ html {
 }
 
 .genButton{
-    margin-top: 1.5rem;
+    margin: 1.5rem 0;
     width: 300px;
-    margin-bottom: 10rem;
 
     @media screen and (max-width: 768px){
+        margin: 0.5rem 0;
         width: 75%;
     }
+}
+
+.settingsButton {
+  margin-left: 1rem;
+  width: auto;
+
+  @media screen and (max-width: 768px){
+    margin: 0;
+    width: 75%;
+  }
 }
 
 .noUnderline{
@@ -206,5 +221,12 @@ html {
 .buttons {
   display: flex;
   justify-content: center;
-  height: 10rem;
+  margin: 0 2rem;
+  flex-wrap: wrap;
+}
+
+.btnFlex {
+  @media screen and (max-width: 768px){
+    margin-bottom: 1rem;
+  }
 }

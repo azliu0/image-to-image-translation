@@ -1,5 +1,5 @@
 import AnimatedPage from "../components/AnimatedPage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LightDarkButton from "../components/LightDarkButton";
 import {
   Image,
@@ -43,6 +43,7 @@ const RootPage = () => {
   const [isHoveredRight, setIsHoveredRight] = useState<boolean>(false);
   const [imageSelected, setImageSelected] = useState(false);
   const [hiddenSettings, setHiddenSettings] = useState(true);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   // model states
   const [model, setModel] = useState<string | null>(null);
@@ -160,6 +161,22 @@ const RootPage = () => {
     }
   };
 
+  // some logic to handle screen widths for mobile
+  useEffect(() => {
+    // Update screenWidth whenever the window is resized
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    // Add an event listener for window resize
+    window.addEventListener("resize", handleResize);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <>
       <AnimatedPage>
@@ -178,31 +195,66 @@ const RootPage = () => {
             InstructPix2Pix Image-to-Image Translation model
           </div>
         </Flex>
-        <Center className={classes.referencesContainer}>
-          <Anchor href="/details" className={classes.reference}>
-            Details
-          </Anchor>
-          <p className={classes.reference}> | </p>
-          <Anchor href="/math" className={classes.reference}>
-            Math
-          </Anchor>
-          <p className={classes.reference}> | </p>
-          <Anchor href="/models" className={classes.reference}>
-            Models
-          </Anchor>
-          <p className={classes.reference}> | </p>
-          <Anchor href="/gallery" className={classes.reference}>
-            Gallery
-          </Anchor>
-          <p className={classes.reference}> | </p>
-          <Anchor
-            href="https://github.com/azliu0/image-to-image-translation"
-            target="_blank"
-            className={classes.reference}
-          >
-            Repo
-          </Anchor>
-        </Center>
+        {screenWidth > 768 ? (
+          <>
+            <Center className={classes.referencesContainer}>
+              <Anchor href="/details" className={classes.reference}>
+                Details
+              </Anchor>
+              <p className={classes.reference}> | </p>
+              <Anchor href="/math" className={classes.reference}>
+                Math
+              </Anchor>
+              <p className={classes.reference}> | </p>
+              <Anchor href="/models" className={classes.reference}>
+                Models
+              </Anchor>
+              <p className={classes.reference}> | </p>
+              <Anchor href="/gallery" className={classes.reference}>
+                Gallery
+              </Anchor>
+              <p className={classes.reference}> | </p>
+              <Anchor
+                href="https://github.com/azliu0/image-to-image-translation"
+                target="_blank"
+                className={classes.reference}
+              >
+                Repo
+              </Anchor>
+            </Center>
+          </>
+        ) : (
+          <>
+            <Center className={classes.referencesContainer}>
+              <Anchor href="/details" className={classes.reference}>
+                Details
+              </Anchor>
+              <p className={classes.reference}> | </p>
+              <Anchor href="/math" className={classes.reference}>
+                Math
+              </Anchor>
+              <p className={classes.reference}> | </p>
+              <Anchor href="/models" className={classes.reference}>
+                Models
+              </Anchor>
+            </Center>
+            <Center
+              className={`${classes.referencesContainer} ${classes.reduceMargin}`}
+            >
+              <Anchor href="/gallery" className={classes.reference}>
+                Gallery
+              </Anchor>
+              <p className={classes.reference}> | </p>
+              <Anchor
+                href="https://github.com/azliu0/image-to-image-translation"
+                target="_blank"
+                className={classes.reference}
+              >
+                Repo
+              </Anchor>
+            </Center>
+          </>
+        )}
         <Center>
           <Select
             label="Select a model:"
@@ -350,7 +402,12 @@ const RootPage = () => {
               />
             </Center>
 
-            <Center>
+            <Flex
+              justify="center"
+              wrap="wrap"
+              gap="1rem"
+              className={classes.btnFlex}
+            >
               <NumberInput
                 label="Inference steps"
                 value={inferenceSteps}
@@ -358,7 +415,6 @@ const RootPage = () => {
                 min={2}
                 max={1000}
                 allowDecimal={false}
-                style={{ paddingRight: "1rem" }}
               />
               <NumberInput
                 label="Temperature"
@@ -368,7 +424,6 @@ const RootPage = () => {
                 step={0.1}
                 min={0.2}
                 max={1.0}
-                style={{ paddingRight: "1rem" }}
               />
               <NumberInput
                 label="CFG"
@@ -378,7 +433,7 @@ const RootPage = () => {
                 max={14}
                 allowDecimal={false}
               />
-            </Center>
+            </Flex>
           </>
         )}
         <div className={classes.buttons}>
@@ -390,10 +445,9 @@ const RootPage = () => {
             {files.length ? "Generate" : "Upload an image to modify! "}
           </Button>
           <Button
-            className={classes.genButton}
+            className={`${classes.settingsButton} ${classes.genButton}`}
             onClick={() => setHiddenSettings(!hiddenSettings)}
             leftSection={<IoSettingsOutline size={18} />}
-            style={{ width: "auto", marginLeft: "1rem" }}
             variant="light"
           >
             {hiddenSettings ? "Show settings" : "Close settings"}
