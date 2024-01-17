@@ -43,6 +43,7 @@ const RootPage = () => {
   // ui states
   const [isHoveredRight, setIsHoveredRight] = useState<boolean>(false);
   const [imageSelected, setImageSelected] = useState(false);
+  const [genImageSelected, setGenImageSelected] = useState(false);
   const [hiddenSettings, setHiddenSettings] = useState(true);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
@@ -384,20 +385,34 @@ const RootPage = () => {
               height: 520,
             }}
           >
-            <Center className={classes.uploadBoxRightChild}>
-              <IconPhoto
-                style={{
-                  width: rem(52),
-                  height: rem(52),
-                  color: "var(--mantine-color-dimmed)",
-                }}
-                stroke={1.5}
-              />
-            </Center>
-            <img id="blah"></img>
-            <Text size="xl" inline>
-              Your generated image will appear here!
-            </Text>
+            <>
+              {genImageSelected ? (
+                // Render uploaded image if previews array has an image
+                <div className={classes.previewContainer2}>
+                  {previews(files)}
+                </div>
+              ) : (
+                <>
+                  <Center className={classes.uploadBoxRightChild}>
+                    <IconPhoto
+                      style={{
+                        width: rem(52),
+                        height: rem(52),
+                        color: "var(--mantine-color-dimmed)",
+                      }}
+                      stroke={1.5}
+                    />
+                  </Center>
+                  <Text
+                    size="xl"
+                    inline
+                    className={classes.uploadBoxRightChildText}
+                  >
+                    Your generated image will appear here!
+                  </Text>
+                </>
+              )}
+            </>
           </div>
         </Flex>
         <Center>
