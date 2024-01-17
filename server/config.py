@@ -4,8 +4,17 @@ from dotenv import load_dotenv
 
 load_dotenv(os.path.dirname(__file__) / Path("../.env"))
 
+# server config
 DEBUG = True
 FLASK_RUN_PORT = 3000
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:3000")
 ALLOWED_DOMAINS = [FRONTEND_URL]
+
+# model config
+VOCAB_SIZE = 49408
+MAX_SEQ_LENGTH = 77
+TOKEN_EMBEDDING_SIZE = 768
+TIME_EMBEDDING_SIZE = 320
+IMAGE_HEIGHT = 512
+IMAGE_WIDTH = 512

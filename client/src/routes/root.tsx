@@ -19,7 +19,7 @@ import {
   //SimpleGrid,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
+import { IconUpload, IconPhoto, IconX, IconCheck } from "@tabler/icons-react";
 import { IoSettingsOutline } from "react-icons/io5";
 import {
   Dropzone,
@@ -50,6 +50,7 @@ const RootPage = () => {
   // model states
   const [model, setModel] = useState<string | null>(null);
   const [files, setFiles] = useState<Array<FileWithPath>>([]);
+  const [genFiles, setGenFiles] = useState<Array<FileWithPath>>([]);
   const [prompt, setPrompt] = useState<string>("");
   const [inferenceSteps, setInferenceSteps] = useState<string | number>(50);
   const [temperature, setTemperature] = useState<string | number>(0.7);
@@ -135,6 +136,7 @@ const RootPage = () => {
   };
 
   const handleDrop = (files: Array<FileWithPath>) => {
+    console.log(files);
     setFiles([files[0]]);
     setImageSelected(true);
   };
@@ -152,35 +154,68 @@ const RootPage = () => {
     return hasErrors;
   };
 
+  const uploadAndFetchImage = async () => {
+    const id = notifications.show({
+      title: "uploading to server",
+      message: "submitting image...",
+      loading: true,
+      withCloseButton: false,
+      autoClose: false,
+    });
+    // const body = {
+    //   model,
+    //   prompt,
+    //   files,
+    //   inferenceSteps,
+    //   temperature,
+    //   CFG,
+    //   negativePrompt,
+    // };
+
+    const formData = new FormData();
+    formData.append("model", model as string);
+    formData.append("files[]", files[0]);
+    const res = await fetch("/api/inference", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.status < 300) {
+      const data = await res.blob();
+      console.log(data);
+      setGenFiles([data]);
+      setGenImageSelected(true);
+      // const resText = await res.json();
+      // notifications.update({
+      //   id,
+      //   title: "Success",
+      //   message: `${resText.message}`,
+      //   color: "green",
+      //   loading: false,
+      //   icon: <IconCheck />,
+      //   withCloseButton: false,
+      //   autoClose: 2000,
+      // });
+    } else {
+      const resText = await res.json();
+      notifications.update({
+        id,
+        title: "inference failed",
+        message: `Error: ${resText?.message || "unknown error"}`,
+        color: "red",
+        loading: false,
+        icon: <IconX />,
+        withCloseButton: false,
+        autoClose: 2000,
+      });
+    }
+  };
+
   const handleGenerate = (): void => {
     notifications.clean();
     const hasErrors = checkErrors();
     if (!hasErrors) {
-      notifications.show({
-        title: "uploading to server",
-        message: "submitting image...",
-        loading: true,
-        withCloseButton: false,
-        autoClose: false,
-      });
-      const body = {
-        model,
-        prompt,
-        files,
-        inferenceSteps,
-        temperature,
-        CFG,
-        negativePrompt,
-      };
-      fetch("/api/inference", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      }).then((res) => {
-        console.log(res);
-      });
+      uploadAndFetchImage();
     }
   };
 
@@ -389,7 +424,7 @@ const RootPage = () => {
               {genImageSelected ? (
                 // Render uploaded image if previews array has an image
                 <div className={classes.previewContainer2}>
-                  {previews(files)}
+                  {previews(genFiles)}
                 </div>
               ) : (
                 <>

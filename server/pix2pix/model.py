@@ -13,17 +13,18 @@ pipe = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 # pipe.to("cuda")
 pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
 
-url = "https://raw.githubusercontent.com/timothybrooks/instruct-pix2pix/main/imgs/example.jpg"
+# url = "https://raw.githubusercontent.com/timothybrooks/instruct-pix2pix/main/imgs/example.jpg"
+# def download_image(url):
+#     image = PIL.Image.open(requests.get(url, stream=True).raw)
+#     image = PIL.ImageOps.exif_transpose(image)
+#     image = image.convert("RGB")
+#     return image
 
+image_path = "../../training/Dog_Breeds.jpg"
 
-def download_image(url):
-    image = PIL.Image.open(requests.get(url, stream=True).raw)
-    image = PIL.ImageOps.exif_transpose(image)
-    image = image.convert("RGB")
-    return image
-
-
-image = download_image(url)
+# Open the image file using PIL
+image = PIL.Image.open(image_path)
+image = image.resize([512, 512])
 print(image)
 
 prompt = "turn him into cyborg"
