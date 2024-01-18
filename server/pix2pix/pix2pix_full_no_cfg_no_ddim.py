@@ -3,7 +3,8 @@ import server.pix2pix.modules.model_loader as model_loader
 from server.pix2pix.modules.pipeline.pipeline import generate
 from PIL import Image
 from transformers import CLIPTokenizer
-import torch
+import boto3
+from server.config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET_NAME
 
 DEVICE = "cpu"
 
@@ -11,12 +12,19 @@ tokenizer = CLIPTokenizer(
     "data/tokenizer_vocab.json", merges_file="data/tokenizer_merges.txt"
 )
 
-model_file = "data/v1-5-pruned-emaonly.ckpt"
+MODEL_PATH = "data/model.ckpt"
 
-models = model_loader.preload_models_from_standard_weights(model_file, DEVICE)
+# Download the model weights from S3
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
+s3.download_file(AWS_BUCKET_NAME, MODEL_PATH, MODEL_PATH)
 
-strength = 0.5
+models = model_loader.preload_models_from_standard_weights(MODEL_PATH, DEVICE)
 
+# TODO: make this configurable when add ddim
 sampler = "ddpm"
 
 
