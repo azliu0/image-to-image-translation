@@ -8,10 +8,10 @@ import torch
 DEVICE = "cpu"
 
 tokenizer = CLIPTokenizer(
-    "../data/tokenizer_vocab.json", merges_file="../data/tokenizer_merges.txt"
+    "data/tokenizer_vocab.json", merges_file="data/tokenizer_merges.txt"
 )
 
-model_file = "../data/v1-5-pruned-emaonly.ckpt"
+model_file = "data/v1-5-pruned-emaonly.ckpt"
 
 models = model_loader.preload_models_from_standard_weights(model_file, DEVICE)
 

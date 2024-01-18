@@ -1,13 +1,7 @@
-import sys
-
-sys.path.append(".")
-sys.path.append("..")
-
-
 import torch
 from torch import nn
 from torch.nn import functional as F
-from attention.attention import SelfAttention
+from server.pix2pix.modules.attention.attention import SelfAttention
 
 
 class VAE_AttentionBlock(nn.Module):

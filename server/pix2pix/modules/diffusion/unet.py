@@ -1,13 +1,7 @@
-import sys
-
-sys.path.append(".")
-sys.path.append("..")
-
-
 import torch
 from torch import nn
 from torch.nn import functional as F
-from attention.attention import SelfAttention, CrossAttention
+from server.pix2pix.modules.attention.attention import SelfAttention, CrossAttention
 
 
 class TimeEmbedding(nn.Module):

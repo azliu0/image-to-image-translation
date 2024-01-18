@@ -1,13 +1,7 @@
-import sys
-
-sys.path.append(".")
-sys.path.append("..")
-
-
 import torch
 from torch import nn
 from torch.nn import functional as F
-from vae.decoder import VAE_AttentionBlock, VAE_ResidualBlock
+from server.pix2pix.modules.vae.decoder import VAE_AttentionBlock, VAE_ResidualBlock
 
 
 class VAE_Encoder(nn.Sequential):

@@ -1,13 +1,8 @@
-import sys
-
-sys.path.append(".")
-sys.path.append("..")
-
 import torch
 from torch import nn
 from torch.nn import functional as F
-from attention.attention import SelfAttention
-from config import MAX_SEQ_LENGTH, TOKEN_EMBEDDING_SIZE, VOCAB_SIZE
+from server.pix2pix.modules.attention.attention import SelfAttention
+from server.config import MAX_SEQ_LENGTH, TOKEN_EMBEDDING_SIZE, VOCAB_SIZE
 
 
 class CLIPEmbedding(nn.Module):
