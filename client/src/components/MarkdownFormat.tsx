@@ -4,11 +4,10 @@ import classes from "../routes/root.module.css";
 import Markdown from "../components/MarkdownRender";
 import { FaCalendarAlt } from "react-icons/fa";
 import { IoIosTime } from "react-icons/io";
-import { CgProfile } from "react-icons/cg";
 
 const MarkdownFormat = ({
   title,
-  author,
+  // author,
   date,
   time,
   content,
