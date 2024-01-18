@@ -55,7 +55,7 @@ const RootPage = () => {
   const [inferenceSteps, setInferenceSteps] = useState<string | number>(50);
   const [temperature, setTemperature] = useState<string | number>(0.7);
   const [CFG, setCFG] = useState<string | number>(7);
-  const [negativePrompt, setNegativePrompt] = useState<string | number>(7);
+  const [negativePrompt, setNegativePrompt] = useState<string | number>("");
 
   // error states
   const [errorModel, setErrorModel] = useState<boolean | String>(false);
@@ -136,7 +136,6 @@ const RootPage = () => {
   };
 
   const handleDrop = (files: Array<FileWithPath>) => {
-    console.log(files);
     setFiles([files[0]]);
     setImageSelected(true);
   };
@@ -162,18 +161,14 @@ const RootPage = () => {
       withCloseButton: false,
       autoClose: false,
     });
-    // const body = {
-    //   model,
-    //   prompt,
-    //   files,
-    //   inferenceSteps,
-    //   temperature,
-    //   CFG,
-    //   negativePrompt,
-    // };
 
     const formData = new FormData();
     formData.append("model", model as string);
+    formData.append("prompt", prompt);
+    formData.append("inferenceSteps", inferenceSteps as string);
+    formData.append("temperature", temperature as string);
+    formData.append("CFG", CFG as string);
+    formData.append("negativePrompt", negativePrompt as string);
     formData.append("files[]", files[0]);
     const res = await fetch("/api/inference", {
       method: "POST",
@@ -182,20 +177,18 @@ const RootPage = () => {
 
     if (res.status < 300) {
       const data = await res.blob();
-      console.log(data);
-      setGenFiles([data]);
+      setGenFiles([data as any]); // suppress ts(2739)
       setGenImageSelected(true);
-      // const resText = await res.json();
-      // notifications.update({
-      //   id,
-      //   title: "Success",
-      //   message: `${resText.message}`,
-      //   color: "green",
-      //   loading: false,
-      //   icon: <IconCheck />,
-      //   withCloseButton: false,
-      //   autoClose: 2000,
-      // });
+      notifications.update({
+        id,
+        title: "Success",
+        message: "image finished generating!",
+        color: "green",
+        loading: false,
+        icon: <IconCheck />,
+        withCloseButton: false,
+        autoClose: 2000,
+      });
     } else {
       const resText = await res.json();
       notifications.update({

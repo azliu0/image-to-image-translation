@@ -18,3 +18,11 @@ TOKEN_EMBEDDING_SIZE = 768
 TIME_EMBEDDING_SIZE = 320
 IMAGE_HEIGHT = 512
 IMAGE_WIDTH = 512
+OPTS = [
+    {"key": "model", "int": False, "float": False},
+    {"key": "prompt", "int": False, "float": False},
+    {"key": "inferenceSteps", "int": True, "float": False},
+    {"key": "temperature", "int": False, "float": True},
+    {"key": "CFG", "int": False, "float": True},
+    {"key": "negativePrompt", "int": False, "float": False},
+]
