@@ -21,8 +21,8 @@ const Page = ({ mdPageLink, displayTitle }: PageInterface) => {
 
   const getAbsMDLink = (mdPageLink: string): string => {
     // mdPageLink: ../md/{name}.md
-    // absMDLink: ./src/md/{name}.md
-    return "./src" + mdPageLink.slice(2);
+    // absMDLink: /md/{name}.md
+    return mdPageLink.slice(2);
   };
 
   useEffect(() => {
