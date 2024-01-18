@@ -11,7 +11,7 @@ export default defineConfig(({ command, mode }) => {
       host: true,
       proxy: {
         "/api": {
-          target: "https://image-to-image-translation-service.onrender.com:3000",
+          target: "http://127.0.0.1:3000",
           changeOrigin: true,
         },
       },

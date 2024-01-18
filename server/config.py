@@ -26,7 +26,7 @@ OPTS = [
     {"key": "prompt", "int": False, "float": False},
     {"key": "inferenceSteps", "int": True, "float": False},
     {"key": "temperature", "int": False, "float": True},
-    {"key": "CFG", "int": False, "float": True},
+    {"key": "CFG", "int": True, "float": False},
     {"key": "negativePrompt", "int": False, "float": False},
 ]
 MODELS = ["pix2pix-base", "pix2pix-full-no-cfg-no-ddim"]
