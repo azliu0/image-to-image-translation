@@ -154,11 +154,13 @@ const RootPage = () => {
   };
 
   const uploadAndFetchImage = async () => {
-    const id = notifications.show({
-      title: "uploading to server",
-      message: "submitting image...",
-      loading: true,
-      withCloseButton: false,
+    notifications.show({
+      title: "image submitted!",
+      message: "your request is being processed. this may take some time...",
+      color: "green",
+      loading: false,
+      icon: <IconCheck />,
+      withCloseButton: true,
       autoClose: false,
     });
 
@@ -179,8 +181,8 @@ const RootPage = () => {
       const data = await res.blob();
       setGenFiles([data as any]); // suppress ts(2739)
       setGenImageSelected(true);
-      notifications.update({
-        id,
+      notifications.clean();
+      notifications.show({
         title: "Success",
         message: "image finished generating!",
         color: "green",
@@ -191,10 +193,10 @@ const RootPage = () => {
       });
     } else {
       const resText = await res.json();
-      notifications.update({
-        id,
+      notifications.clean();
+      notifications.show({
         title: "inference failed",
-        message: `Error: ${resText?.message || "unknown error"}`,
+        message: `${resText?.message || "unknown error"}`,
         color: "red",
         loading: false,
         icon: <IconX />,
@@ -205,7 +207,12 @@ const RootPage = () => {
   };
 
   const handleGenerate = (): void => {
+    // clear output
+    setGenFiles([]);
+    setGenImageSelected(false);
+    // clear notifications
     notifications.clean();
+    // check for errors
     const hasErrors = checkErrors();
     if (!hasErrors) {
       uploadAndFetchImage();

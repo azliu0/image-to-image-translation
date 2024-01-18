@@ -29,7 +29,7 @@ def inference_pix2pix_full_no_cfg_no_ddim(opts, image):
         do_cfg=True,
         cfg_scale=opts["CFG"],
         sampler_name=sampler,
-        n_inference_steps=opts["num_inference_steps"],
+        n_inference_steps=opts["inferenceSteps"],
         models=models,
         device=DEVICE,
         tokenizer=tokenizer,
