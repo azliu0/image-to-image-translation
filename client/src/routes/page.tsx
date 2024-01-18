@@ -6,6 +6,10 @@ import LightDarkButton from "../components/LightDarkButton";
 import { MarkdownFile, parseMD } from "../utils/MarkdownUtils";
 import MarkdownFormat from "../components/MarkdownFormat";
 import { PageInterface } from "../App";
+import detailsPage from "../md/details.md";
+import galleryPage from "../md/gallery.md";
+import mathPage from "../md/math.md";
+import modelsPage from "../md/models.md";
 
 const Page = ({ mdPageLink, displayTitle }: PageInterface) => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -22,9 +26,20 @@ const Page = ({ mdPageLink, displayTitle }: PageInterface) => {
   };
 
   useEffect(() => {
-    import(/* @vite-ignore */ mdPageLink)
-      .then((mdPageLinkModule) => mdPageLinkModule.default)
-      .then((mdPageFile) => fetch(mdPageFile))
+    let page;
+    if (mdPageLink === "../md/details.md") {
+      page = detailsPage;
+    } else if (mdPageLink === "../md/gallery.md") {
+      page = galleryPage;
+    } else if (mdPageLink === "../md/math.md") {
+      page = mathPage;
+    } else if (mdPageLink === "../md/models.md") {
+      page = modelsPage;
+    }
+    // import(/* @vite-ignore */ mdPageLink)
+    //   .then((mdPageLinkModule) => mdPageLinkModule.default)
+    //   .then((mdPageFile) => fetch(mdPageFile))
+    fetch(page as any)
       .then((res) => res.text())
       .then((text: string) => parseMD(text))
       .then((parsed: MarkdownFile) => {
