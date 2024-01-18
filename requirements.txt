@@ -6,4 +6,5 @@ transformers
 pytorch_lightning
 flask_cors
 python-dotenv
-flask
+APIFlask
+Flask
