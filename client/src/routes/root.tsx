@@ -16,6 +16,7 @@ import {
   TextInput,
   MantineTheme,
   NumberInput,
+  Loader,
   //SimpleGrid,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -46,6 +47,7 @@ const RootPage = () => {
   const [genImageSelected, setGenImageSelected] = useState(false);
   const [hiddenSettings, setHiddenSettings] = useState(true);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [loadingGeneration, setLoadingGeneration] = useState<boolean>(false);
 
   // model states
   const [model, setModel] = useState<string | null>(null);
@@ -154,9 +156,12 @@ const RootPage = () => {
   };
 
   const uploadAndFetchImage = async () => {
+    setLoadingGeneration(true);
     notifications.show({
       title: "image submitted!",
-      message: "your request is being processed. this may take some time...",
+      message:
+        "your request is being processed. \n \
+        this may take some time...",
       color: "green",
       loading: false,
       icon: <IconCheck />,
@@ -176,6 +181,7 @@ const RootPage = () => {
       method: "POST",
       body: formData,
     });
+    setLoadingGeneration(false);
 
     if (res.status < 300) {
       const data = await res.blob();
@@ -428,23 +434,46 @@ const RootPage = () => {
                 </div>
               ) : (
                 <>
-                  <Center className={classes.uploadBoxRightChild}>
-                    <IconPhoto
-                      style={{
-                        width: rem(52),
-                        height: rem(52),
-                        color: "var(--mantine-color-dimmed)",
-                      }}
-                      stroke={1.5}
-                    />
-                  </Center>
-                  <Text
-                    size="xl"
-                    inline
-                    className={classes.uploadBoxRightChildText}
-                  >
-                    Your generated image will appear here!
-                  </Text>
+                  {loadingGeneration ? (
+                    <Group className={classes.uploadBoxRightChildLoading}>
+                      <div>your image is being generated!</div>
+                      <div>
+                        <Loader
+                          color="orange"
+                          size="lg"
+                          className={classes.loader}
+                        />
+                      </div>
+                      <div>
+                        if it is taking too long, consider lowering the number
+                        of inference steps
+                      </div>
+                      <div>
+                        to see how each of the settings affects the quality of
+                        the final image, check out the Details page!
+                      </div>
+                    </Group>
+                  ) : (
+                    <>
+                      <Center className={classes.uploadBoxRightChild}>
+                        <IconPhoto
+                          style={{
+                            width: rem(52),
+                            height: rem(52),
+                            color: "var(--mantine-color-dimmed)",
+                          }}
+                          stroke={1.5}
+                        />
+                      </Center>
+                      <Text
+                        size="xl"
+                        inline
+                        className={classes.uploadBoxRightChildText}
+                      >
+                        Your generated image will appear here!
+                      </Text>
+                    </>
+                  )}
                 </>
               )}
             </>

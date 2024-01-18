@@ -92,6 +92,18 @@ ul li {
   padding-top: 175px;
 }
 
+.uploadBoxRightChildLoading {
+  margin-top: 150px;
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  color: gray;
+}
+
+.loader {
+  margin-top: 1rem;
+}
+
 .uploadBoxRightChildText {
   padding-top: 8px;
 }
