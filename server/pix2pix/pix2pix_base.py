@@ -15,11 +15,12 @@ pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.conf
 
 
 def inference_pix2pix_base(opts, image):
-    image.resize([IMAGE_HEIGHT, IMAGE_WIDTH])
-    images = pipe(
+    image = image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
+    print(image)
+    image = pipe(
         opts["prompt"],
         image,
-        num_inference_steps=opts["num_inference_steps"],
+        num_inference_steps=opts["inferenceSteps"],
         image_guidance_scale=1.0 / opts["temperature"],
-    )
-    images[0].save("output.png")
+    ).images[0]
+    image.save("output.png")

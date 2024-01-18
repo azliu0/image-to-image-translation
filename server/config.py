@@ -26,3 +26,4 @@ OPTS = [
     {"key": "CFG", "int": False, "float": True},
     {"key": "negativePrompt", "int": False, "float": False},
 ]
+MODELS = ["pix2pix-base", "pix2pix-full-no-cfg-no-ddim"]

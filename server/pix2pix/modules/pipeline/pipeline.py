@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import tqdm as tqdm
-from diffusion.ddpm import DDPMSampler
+from server.pix2pix.modules.diffusion.ddpm import DDPMSampler
 from server.config import MAX_SEQ_LENGTH, TIME_EMBEDDING_SIZE, IMAGE_HEIGHT, IMAGE_WIDTH
 
 LATENT_WIDTH = IMAGE_WIDTH // 8
@@ -72,7 +72,7 @@ def generate(
             encoder = models["encoder"]
             encoder = encoder.to(device)
 
-            input_image_tensor = input_image.resize([WIDTH, HEIGHT])
+            input_image_tensor = input_image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
             input_image_tensor = np.array(input_image_tensor)
             # (h,w,c)
             input_image_tensor = torch.tensor(input_image_tensor, dtype=torch.float32)

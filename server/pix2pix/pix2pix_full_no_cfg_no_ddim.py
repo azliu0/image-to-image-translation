@@ -37,4 +37,4 @@ def inference_pix2pix_full_no_cfg_no_ddim(opts, image):
 
     output_image = output_image.astype(np.uint8)
     output_image = Image.fromarray(output_image)
-    output_image.save("output_image.png")
+    output_image.save("output.png")

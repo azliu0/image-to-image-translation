@@ -198,8 +198,8 @@ const RootPage = () => {
         color: "red",
         loading: false,
         icon: <IconX />,
-        withCloseButton: false,
-        autoClose: 2000,
+        withCloseButton: true,
+        autoClose: false,
       });
     }
   };
