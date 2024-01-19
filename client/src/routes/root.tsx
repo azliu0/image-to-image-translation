@@ -439,9 +439,7 @@ const RootPage = () => {
                 <>
                   {loadingGeneration ? (
                     <Group className={classes.uploadBoxRightChildLoading}>
-                      <div>
-                        your image is being generated! do not refresh the page.{" "}
-                      </div>
+                      <div>your image is being generated!</div>
                       <div>
                         <Loader
                           color="orange"
@@ -450,8 +448,8 @@ const RootPage = () => {
                         />
                       </div>
                       <div>
-                        if it is taking too long, consider lowering the number
-                        of inference steps
+                        do not refresh the page. if it is taking too long,
+                        consider lowering the number of inference steps
                       </div>
                       <div>
                         to see how each of the settings affects the quality of
