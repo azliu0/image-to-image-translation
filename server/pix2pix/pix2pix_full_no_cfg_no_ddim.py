@@ -13,15 +13,15 @@ tokenizer = CLIPTokenizer(
 )
 
 MODEL_PATH = "data/model.ckpt"
-MODEL_REMOTE_PATH = "v1-5-pruned-emaonly.ckpt"
+# MODEL_REMOTE_PATH = "v1-5-pruned-emaonly.ckpt"
 
 # Download the model weights from S3
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-)
-s3.download_file(AWS_BUCKET_NAME, MODEL_REMOTE_PATH, MODEL_PATH)
+# s3 = boto3.client(
+#     "s3",
+#     aws_access_key_id=AWS_ACCESS_KEY_ID,
+#     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+# )
+# s3.download_file(AWS_BUCKET_NAME, MODEL_REMOTE_PATH, MODEL_PATH)
 
 models = model_loader.preload_models_from_standard_weights(MODEL_PATH, DEVICE)
 
