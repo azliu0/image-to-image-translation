@@ -42,6 +42,10 @@ ul li {
   text-align: center;
 }
 
+.footer a {
+  text-decoration: none;
+}
+
 .referencesContainer{
   text-align: center;
   margin-right: 5px;
