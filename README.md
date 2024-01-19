@@ -31,6 +31,10 @@ python3 run.py
 
 This is a flask server whose only purpose is to perform inference. All models require around 4GB RAM to run. 
 
+## Note about model deployment
+
+We struggled greatly with figuring out how to deploy our model. Unfortunately, after struggling with many possibilities, we were not able to come up with a good solution for deploying the model in a cost-effective manner. Therefore, the model server is currently running on a spare laptop in Andrew's room. If you have any suggestions for us, please feel free to reach out! For reference, all model inference requires around 4GB RAM, and we would like a solution that we can pay for indefinitely. Serverless is OK.
+
 ## TODO
 
 - finish the remainder of the models
