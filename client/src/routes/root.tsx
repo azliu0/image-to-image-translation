@@ -54,7 +54,7 @@ const RootPage = () => {
   const [files, setFiles] = useState<Array<FileWithPath>>([]);
   const [genFiles, setGenFiles] = useState<Array<FileWithPath>>([]);
   const [prompt, setPrompt] = useState<string>("");
-  const [inferenceSteps, setInferenceSteps] = useState<string | number>(50);
+  const [inferenceSteps, setInferenceSteps] = useState<string | number>(10);
   const [temperature, setTemperature] = useState<string | number>(0.7);
   const [CFG, setCFG] = useState<string | number>(7);
   const [negativePrompt, setNegativePrompt] = useState<string | number>("");
@@ -177,8 +177,11 @@ const RootPage = () => {
     formData.append("CFG", CFG as string);
     formData.append("negativePrompt", negativePrompt as string);
     formData.append("files[]", files[0]);
-    const res = await fetch("/api/inference", {
+    const res = await fetch("https://a6276d5b23e4.ngrok.app/api/inference", {
       method: "POST",
+      headers: {
+        "ngrok-skip-browser-warning": "1",
+      },
       body: formData,
     });
     setLoadingGeneration(false);
@@ -436,7 +439,9 @@ const RootPage = () => {
                 <>
                   {loadingGeneration ? (
                     <Group className={classes.uploadBoxRightChildLoading}>
-                      <div>your image is being generated!</div>
+                      <div>
+                        your image is being generated! do not refresh the page.{" "}
+                      </div>
                       <div>
                         <Loader
                           color="orange"
