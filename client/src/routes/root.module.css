@@ -97,7 +97,7 @@ ul li {
 }
 
 .uploadBoxRightChildLoading {
-  margin-top: 150px;
+  margin-top: 125px;
   display: flex;
   flex-direction: column;
   width: 75%;

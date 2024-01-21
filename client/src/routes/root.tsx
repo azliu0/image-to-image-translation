@@ -161,7 +161,7 @@ const RootPage = () => {
       title: "image submitted!",
       message:
         "your request is being processed. \n \
-        this may take some time...",
+        this may take a few minutes...",
       color: "green",
       loading: false,
       icon: <IconCheck />,
@@ -448,12 +448,14 @@ const RootPage = () => {
                         />
                       </div>
                       <div>
-                        do not refresh the page. if it is taking too long,
-                        consider lowering the number of inference steps
+                        do not refresh the page. this might take a few minutes,
+                        feel free to leave this page and come back.
                       </div>
                       <div>
-                        to see how each of the settings affects the quality of
-                        the final image, check out the Details page!
+                        if it is taking too long, consider lowering the number
+                        of inference steps. to see how each of the settings
+                        affects the quality of the final image, check out the
+                        Details page!
                       </div>
                     </Group>
                   ) : (
