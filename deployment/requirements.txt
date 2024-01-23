@@ -1,0 +1,12 @@
+torch==2.1.2
+diffusers==0.25.1
+accelerate==0.26.1
+safetensors==0.4.1
+transformers==4.36.2
+pytorch_lightning==2.1.3
+flask_cors==4.0.0
+python-dotenv==1.0.0
+APIFlask==2.1.0
+Flask==3.0.0
+boto3==1.34.21
+modelbit==0.32.4
