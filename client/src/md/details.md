@@ -52,9 +52,9 @@ Images with 512x512 base resolution will generally work best, since this is the 
 
 This website was built from scratch. The main frontend framework was [React](https://react.dev/), and we had some fun integrating libraries like [Mantine UI](https://mantine.dev/) and [Framer Motion](https://www.framer.com/motion/) for styling quirks. We used [react-markdown](https://github.com/remarkjs/react-markdown) for markdown parsing, along with [remark-math](https://www.npmjs.com/package/remark-math) and [react-katex](https://www.npmjs.com/package/react-katex) to handling $$\LaTeX$$ parsing inside of markdown. The backend is a [Flask](https://flask.palletsprojects.com/en/3.0.x/) server. 
 
-We struggled greatly with figuring out how to deploy our model. Unfortunately, after struggling with many possibilities, we were not able to come up with a good solution for deploying the model in a cost-effective manner. Therefore, the model server is currently running on a spare laptop in Andrew's room. If you have any suggestions for us, please feel free to reach out! For reference, all model inference requires around 4GB RAM, and we would like a solution that we can pay for indefinitely. Serverless is OK.
+We struggled greatly with figuring out how to deploy our model. Our primary constraints were model size and cost, so we had to look for a serverless inference solution that could support more than 4GB RAM (roughly the size of the model), preferably without having to set up lots of additional infrastructure. After playing around with [Google Cloud Run](https://cloud.google.com/run/docs/quickstarts/deploy-container), [AWS Sagemaker](https://docs.aws.amazon.com/sagemaker/latest/dg/realtime-endpoints.html), and other related services, we finally settled with [Modelbit](https://www.modelbit.com/). The final workflow that we devised involves saving images to an [AWS S3](https://aws.amazon.com/s3/) bucket before calling the model through a deployed endpoint. In particular **uploaded images are not private**. 
 
-We used [Render](https://render.com/) for deployment. Feel free to check out our [repository](https://github.com/azliu0/image-to-image-translation)!
+We used [Render](https://render.com/) to deploy our react client and flask server. Feel free to check out our [repository](https://github.com/azliu0/image-to-image-translation)!
 
 ### Pages
 

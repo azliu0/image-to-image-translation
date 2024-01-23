@@ -34,19 +34,14 @@ def validate_model(model):
 
 
 def do_inference(opts, image, remote=False):
-    remote = False
     if opts["model"] not in MODELS:
         raise ModelNotFoundException()
     if remote:
-        try:
-            pil_to_s3(image)
-            modelbit_inference(opts, opts["model"])
-            output_image = s3_to_pil()
-            save_pil(output_image)
-        except Exception as e:
-            raise Exception(f"{e}")
+        pil_to_s3(image)
+        modelbit_inference(opts, opts["model"])
+        output_image = s3_to_pil()
+        save_pil(output_image)
     else:
-        pass
         # commenting out b/c assuming modelbit used
         pil_to_s3(image)
         match opts["model"]:
