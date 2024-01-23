@@ -5,14 +5,12 @@ from PIL import Image
 from io import BytesIO
 from werkzeug.datastructures import FileStorage
 from server.utils.ModelNotFoundException import ModelNotFoundException
-import asyncio
+from server.utils.s3 import pil_to_s3, s3_to_pil
 
 # inference modules
-from server.config import OPTS, MODELS
+from server.config import OPTS, MODELS, MODELBIT
 from server.pix2pix.pix2pix_base import inference_pix2pix_base
-from server.pix2pix.pix2pix_full_no_cfg_no_ddim import (
-    inference_pix2pix_full_no_cfg_no_ddim,
-)
+from server.utils.modelbit import modelbit_pix2pix_full_no_cfg_no_ddim
 
 api = APIBlueprint("api", __name__, url_prefix="/api")
 
@@ -32,15 +30,23 @@ def validate_model(model):
         raise ModelNotFoundException()
 
 
-def do_inference(opts, image):
-    print(opts)
+def do_inference(opts, image, modelbit=False):
+    if opts["model"] not in MODELS:
+        raise ModelNotFoundException()
     match opts["model"]:
         case "pix2pix-base":
             inference_pix2pix_base(opts, image)
         case "pix2pix-full-no-cfg-no-ddim":
-            inference_pix2pix_full_no_cfg_no_ddim(opts, image)
-        case _:
-            raise ModelNotFoundException()
+            if modelbit:
+                try:
+                    pil_to_s3(image)
+                    modelbit_pix2pix_full_no_cfg_no_ddim(opts)
+                    output_image = s3_to_pil()
+                    save_pil(output_image)
+                except Exception as e:
+                    raise Exception(f"{e}")
+            # else:
+            #     inference_pix2pix_full_no_cfg_no_ddim(opts, image)
 
 
 @api.route("/")
@@ -79,6 +85,7 @@ def inference():
         elif opt["float"]:
             opts[opt["key"]] = float(opts[opt["key"]])
 
+    print(opts)
     # validate model type
     try:
         validate_model(opts["model"])
@@ -89,7 +96,7 @@ def inference():
 
     # do inference!
     try:
-        do_inference(opts, image)
+        do_inference(opts, image, modelbit=MODELBIT)
     except ModelNotFoundException:
         resp = jsonify({"message": f"Error: model type does not exist!"})
         resp.status_code = 400

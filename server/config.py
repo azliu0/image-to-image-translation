@@ -30,3 +30,6 @@ OPTS = [
     {"key": "negativePrompt", "int": False, "float": False},
 ]
 MODELS = ["pix2pix-base", "pix2pix-full-no-cfg-no-ddim"]
+TARGET_IMAGE_PATH = "output.png"
+MODELBIT = True
+MODELBIT_URL = "https://andrewliu.us-east-1.modelbit.com/v1/inference_pix2pix_full_no_cfg_no_ddim_modelbit/latest"
