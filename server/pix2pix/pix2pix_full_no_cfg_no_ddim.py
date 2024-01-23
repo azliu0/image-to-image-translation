@@ -5,6 +5,7 @@ from PIL import Image
 from transformers import CLIPTokenizer
 import boto3
 from server.utils.s3 import s3_to_pil, pil_to_s3
+from server.config import IMAGE_HEIGHT, IMAGE_WIDTH
 
 DEVICE = "cpu"
 
@@ -44,8 +45,10 @@ def inference_pix2pix_full_no_cfg_no_ddim_modelbit(opts):
     try:
         image = s3_to_pil()
     except:
-        return "error uploading image"
+        raise Exception("error downloading image")
 
+    image = image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
+    print(image)
     output_image = generate(
         prompt=opts["prompt"],
         uncond_prompt=opts["negativePrompt"],
@@ -66,4 +69,4 @@ def inference_pix2pix_full_no_cfg_no_ddim_modelbit(opts):
     try:
         pil_to_s3(output_image)
     except:
-        return "error saving image"
+        raise Exception("error uploading image")

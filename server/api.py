@@ -10,7 +10,7 @@ from server.utils.s3 import pil_to_s3, s3_to_pil
 # inference modules
 from server.config import OPTS, MODELS, MODELBIT
 from server.pix2pix.pix2pix_base import inference_pix2pix_base
-from server.utils.modelbit import modelbit_pix2pix_full_no_cfg_no_ddim
+from server.utils.modelbit import modelbit_inference
 
 api = APIBlueprint("api", __name__, url_prefix="/api")
 
@@ -33,20 +33,22 @@ def validate_model(model):
 def do_inference(opts, image, modelbit=False):
     if opts["model"] not in MODELS:
         raise ModelNotFoundException()
-    match opts["model"]:
-        case "pix2pix-base":
-            inference_pix2pix_base(opts, image)
-        case "pix2pix-full-no-cfg-no-ddim":
-            if modelbit:
-                try:
-                    pil_to_s3(image)
-                    modelbit_pix2pix_full_no_cfg_no_ddim(opts)
-                    output_image = s3_to_pil()
-                    save_pil(output_image)
-                except Exception as e:
-                    raise Exception(f"{e}")
-            # else:
-            #     inference_pix2pix_full_no_cfg_no_ddim(opts, image)
+    if modelbit:
+        try:
+            pil_to_s3(image)
+            modelbit_inference(opts, opts["model"])
+            output_image = s3_to_pil()
+            save_pil(output_image)
+        except Exception as e:
+            raise Exception(f"{e}")
+    else:
+        pass
+        # commenting out b/c assuming modelbit used
+        # match opts["model"]:
+        #     case "pix2pix-base":
+        #         inference_pix2pix_base(opts, image)
+        #     case "pix2pix-full-no-cfg-no-ddim":
+        #         inference_pix2pix_full_no_cfg_no_ddim(opts, image)
 
 
 @api.route("/")

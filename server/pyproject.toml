@@ -1,0 +1,7 @@
+[build-system]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "image-to-image-translation-server"
+description = "image to image translation server"
+version = "1.0.0"

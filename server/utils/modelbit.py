@@ -1,10 +1,10 @@
 import requests
 import json
-from server.config import MODELBIT_URL
+from server.config import MODELBIT_URLS
 
 
-def modelbit_pix2pix_full_no_cfg_no_ddim(opts):
-    modelbit_url = MODELBIT_URL
+def modelbit_inference(opts, model):
+    modelbit_url = MODELBIT_URLS[model]
     body = {"data": opts}
     body = json.dumps(body)
     headers = {"Content-Type": "application/json"}
