@@ -44,8 +44,8 @@ def inference_pix2pix_full_no_cfg_no_ddim(opts, image):
 def inference_pix2pix_full_no_cfg_no_ddim_modelbit(opts):
     try:
         image = s3_to_pil()
-    except:
-        raise Exception("error downloading image")
+    except Exception as e:
+        raise Exception(f"{e}")
 
     image = image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
     print(image)
@@ -68,5 +68,5 @@ def inference_pix2pix_full_no_cfg_no_ddim_modelbit(opts):
 
     try:
         pil_to_s3(output_image)
-    except:
-        raise Exception("error uploading image")
+    except Exception as e:
+        raise Exception(f"{e}")

@@ -8,9 +8,12 @@ from server.utils.ModelNotFoundException import ModelNotFoundException
 from server.utils.s3 import pil_to_s3, s3_to_pil
 
 # inference modules
-from server.config import OPTS, MODELS, MODELBIT
-from server.pix2pix.pix2pix_base import inference_pix2pix_base
+from server.config import OPTS, MODELS, REMOTE
 from server.utils.modelbit import modelbit_inference
+from server.pix2pix.pix2pix_base import inference_pix2pix_base_modelbit
+from server.pix2pix.pix2pix_full_no_cfg_no_ddim import (
+    inference_pix2pix_full_no_cfg_no_ddim_modelbit,
+)
 
 api = APIBlueprint("api", __name__, url_prefix="/api")
 
@@ -30,10 +33,11 @@ def validate_model(model):
         raise ModelNotFoundException()
 
 
-def do_inference(opts, image, modelbit=False):
+def do_inference(opts, image, remote=False):
+    remote = False
     if opts["model"] not in MODELS:
         raise ModelNotFoundException()
-    if modelbit:
+    if remote:
         try:
             pil_to_s3(image)
             modelbit_inference(opts, opts["model"])
@@ -44,11 +48,14 @@ def do_inference(opts, image, modelbit=False):
     else:
         pass
         # commenting out b/c assuming modelbit used
-        # match opts["model"]:
-        #     case "pix2pix-base":
-        #         inference_pix2pix_base(opts, image)
-        #     case "pix2pix-full-no-cfg-no-ddim":
-        #         inference_pix2pix_full_no_cfg_no_ddim(opts, image)
+        pil_to_s3(image)
+        match opts["model"]:
+            case "pix2pix-base":
+                inference_pix2pix_base_modelbit(opts)
+            case "pix2pix-full-no-cfg-no-ddim":
+                inference_pix2pix_full_no_cfg_no_ddim_modelbit(opts)
+        output_image = s3_to_pil()
+        save_pil(output_image)
 
 
 @api.route("/")
@@ -98,7 +105,7 @@ def inference():
 
     # do inference!
     try:
-        do_inference(opts, image, modelbit=MODELBIT)
+        do_inference(opts, image, remote=REMOTE)
     except ModelNotFoundException:
         resp = jsonify({"message": f"Error: model type does not exist!"})
         resp.status_code = 400

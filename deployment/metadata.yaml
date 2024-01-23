@@ -1,7 +1,0 @@
-owner: andrewliu278@gmail.com
-runtimeInfo:
-  mainFunction: inference_pix2pix_full_no_cfg_no_ddim_modelbit
-  mainFunctionArgs:
-    - opts:Any
-  pythonVersion: "3.10"
-schemaVersion: 2
