@@ -29,10 +29,10 @@ def pil_to_s3(image):
 
 
 def s3_to_pil():
-    buffer = BytesIO()
     print("downloading image from s3...")
-    s3.download_fileobj(AWS_BUCKET_NAME, TARGET_IMAGE_PATH, buffer)
+    response = s3.get_object(Bucket=AWS_BUCKET_NAME, Key=TARGET_IMAGE_PATH)
     print("image downloaded from s3 successfully.")
-    buffer.seek(0)
-    image = Image.open(buffer)
+    image_data = response["Body"].read()
+    image_bytes = BytesIO(image_data)
+    image = Image.open(image_bytes)
     return image
