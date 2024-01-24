@@ -54,7 +54,7 @@ This website was built from scratch. The main frontend framework was [React](htt
 
 We struggled greatly with figuring out how to deploy our model. Our primary constraints were model size and cost, so we had to look for a serverless inference solution that could support more than 4GB RAM (roughly the size of the model), preferably without having to set up lots of additional infrastructure. We eventually settled with [Modelbit](https://www.modelbit.com/), using [AWS S3](https://aws.amazon.com/s3/) buckets to store and download images in the deployed endpoint. Note in particular that **uploaded images are not private**. 
 
-We used [Render](https://render.com/) to deploy our react client and flask server. Feel free to check out our [repository](https://github.com/azliu0/image-to-image-translation)!
+Both the react client and flask server are deployed on [Render](https://render.com/). Feel free to check out our [repository](https://github.com/azliu0/image-to-image-translation)!
 
 ### Pages
 

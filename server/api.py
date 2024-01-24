@@ -10,10 +10,6 @@ from server.utils.s3 import pil_to_s3, s3_to_pil
 # inference modules
 from server.config import OPTS, MODELS, REMOTE
 from server.utils.modelbit import modelbit_inference
-from server.pix2pix.pix2pix_base import inference_pix2pix_base_modelbit
-from server.pix2pix.pix2pix_full_no_cfg_no_ddim import (
-    inference_pix2pix_full_no_cfg_no_ddim_modelbit,
-)
 
 api = APIBlueprint("api", __name__, url_prefix="/api")
 
@@ -42,15 +38,16 @@ def do_inference(opts, image, remote=False):
         output_image = s3_to_pil()
         save_pil(output_image)
     else:
+        pass
         # commenting out b/c assuming modelbit used
-        pil_to_s3(image)
-        match opts["model"]:
-            case "pix2pix-base":
-                inference_pix2pix_base_modelbit(opts)
-            case "pix2pix-full-no-cfg-no-ddim":
-                inference_pix2pix_full_no_cfg_no_ddim_modelbit(opts)
-        output_image = s3_to_pil()
-        save_pil(output_image)
+        # pil_to_s3(image)
+        # match opts["model"]:
+        #     case "pix2pix-base":
+        #         inference_pix2pix_base_modelbit(opts)
+        #     case "pix2pix-full-no-cfg-no-ddim":
+        #         inference_pix2pix_full_no_cfg_no_ddim_modelbit(opts)
+        # output_image = s3_to_pil()
+        # save_pil(output_image)
 
 
 @api.route("/")
