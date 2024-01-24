@@ -177,13 +177,16 @@ const RootPage = () => {
     formData.append("CFG", CFG as string);
     formData.append("negativePrompt", negativePrompt as string);
     formData.append("files[]", files[0]);
-    const res = await fetch("/api/inference", {
-      method: "POST",
-      headers: {
-        "ngrok-skip-browser-warning": "1",
-      },
-      body: formData,
-    });
+    const res = await fetch(
+      "https://image-to-image-translation-server.onrender.com/api/inference",
+      {
+        method: "POST",
+        headers: {
+          "ngrok-skip-browser-warning": "1",
+        },
+        body: formData,
+      }
+    );
     setLoadingGeneration(false);
 
     if (res.status < 300) {

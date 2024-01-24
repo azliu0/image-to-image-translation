@@ -21,7 +21,7 @@ cd client
 yarn install && yarn dev
 ```
 
-By default, the client runs on port `5432`.
+By default, the client runs on port `5173`.
 
 ### Server
 
@@ -39,7 +39,7 @@ The client and flask server is deployed on [Render](https://render.com/).
 
 ## Model deployment
 
-All models are deployed on [ModelBit](https://www.modelbit.com/), and all model inference requires around 4GB RAM. The deployment script is very simple and lives in `server/modelbit.ipynb`. One thing to note when deploying is that the python package `image-to-image-translation-server` must be self-contained, i.e., it will not have access to a `.env`. This means that `config.py` must be modified to include actual values rather than what is included right now.
+All models are deployed on [ModelBit](https://www.modelbit.com/), and all model inference requires around 4GB RAM. The deployment script is very simple and lives in `modelbit.ipynb`. One thing to note when deploying is that the python package `image-to-image-translation-server` must be self-contained, i.e., it will not have access to a `.env`. This means that `server/config.py` must be modified to include actual values rather than what is included right now.
 
 ## TODO
 
