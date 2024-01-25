@@ -87,7 +87,7 @@ def inference():
         elif opt["float"]:
             opts[opt["key"]] = float(opts[opt["key"]])
 
-    print(opts)
+    print(opts, flush=True)
     # validate model type
     try:
         validate_model(opts["model"])
