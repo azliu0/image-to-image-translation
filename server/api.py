@@ -8,7 +8,7 @@ from server.utils.ModelNotFoundException import ModelNotFoundException
 from server.utils.s3 import pil_to_s3, s3_to_pil
 
 # inference modules
-from server.config import OPTS, MODELS, REMOTE
+from server.config import OPTS, MODELS, REMOTE, IMAGE_HEIGHT, IMAGE_WIDTH
 from server.utils.modelbit import modelbit_inference
 
 api = APIBlueprint("api", __name__, url_prefix="/api")
@@ -67,6 +67,8 @@ def inference():
     # file exists, so we can extract input image
     image = request.files.getlist("files[]")[0]
     image = get_pil_image(image)
+    image = image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
+    print(image, flush=True)
 
     # convert form to dictionary
     form = request.form.to_dict()
