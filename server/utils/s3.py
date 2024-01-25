@@ -35,4 +35,6 @@ def s3_to_pil():
     image_data = response["Body"].read()
     image_bytes = BytesIO(image_data)
     image = Image.open(image_bytes)
+    if image.mode == "RGBA":
+        image = image.convert("RGB")
     return image

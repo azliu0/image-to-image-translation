@@ -38,8 +38,9 @@ def do_inference(opts, image, remote=False):
         output_image = s3_to_pil()
         save_pil(output_image)
     else:
-        pass
+        raise Exception("remote inference not enabled")
         # commenting out b/c assuming modelbit used
+        # save space in render!
         # pil_to_s3(image)
         # match opts["model"]:
         #     case "pix2pix-base":
