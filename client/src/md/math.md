@@ -493,7 +493,7 @@ We can apply similar logic to obtain classifier-free guidance with two condition
 
 In [Brooks et. al](https://arxiv.org/abs/2211.09800), the authors chose to omit only $$c_I$$ in $$5\%$$ of examples, only $$c_T$$ in $$5\%$$ of examples, and both $$c_I$$ and $$c_T$$ in $$5\%$$ of examples. This produces a robust noise estimator for different combinations of conditionings. 
 
-For inference, we can similarly introduce scaling factors $$s_I, s_T$$ to adjust how strongly we want to the generated image to correlate with the class label condition and the input image condition, respectively. Our final noise estimator becomes
+For inference, we can similarly introduce scaling factors $$s_I, s_T$$ to adjust how strongly we want to the generated image to correlate with the input image condition and the class label condition, respectively. Our final noise estimator becomes
 
 $$
 \begin{align*}
