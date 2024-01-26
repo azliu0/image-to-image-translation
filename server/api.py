@@ -24,6 +24,11 @@ def save_pil(pil):
     pil.save("output.png")
 
 
+def validate_imgtype(imgtype):
+    if imgtype not in ["image/png", "image/jpeg"]:
+        raise Exception("Image must be of type png or jpeg")
+
+
 def validate_model(model):
     if model not in MODELS:
         raise ModelNotFoundException()
@@ -66,6 +71,16 @@ def inference():
 
     # file exists, so we can extract input image
     image = request.files.getlist("files[]")[0]
+
+    # validate image type
+    try:
+        validate_imgtype(image.mimetype)
+    except Exception as e:
+        resp = jsonify({"message": f"Error: {e}"})
+        resp.status_code = 400
+        return resp
+
+    # transform to pil image
     image = get_pil_image(image)
     image = image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
     print(image, flush=True)
