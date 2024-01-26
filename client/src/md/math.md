@@ -417,13 +417,17 @@ The general approach is as follows. At each step during inference, we are trying
 
 We first consider the case when we have an external classifier $$f_{\phi}(y|x_t,t)$$. We want to use the gradient of the classifier, $$\nabla_x \log f_{\phi}(y|x_t)$$ to alter the noise prediction based on our classifier in order to guide our diffusion process. Intuitively, taking the gradient of the classifier can essentially be described as calculating the log difference of the probabilities in two images at adjacent timesteps.
 
-Given our model $$\epsilon_{\theta}(x_t)$$ that predicts the amount of noise added in a sample from DDIM, we can see that
+Note in general that the gradient of a multivariate normal $$p(x)\sim \mathcal{N}(x; \mu, \Sigma)$$ is given by 
 
 $$
-\nabla_{x_t}\log q(x_t) = -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\epsilon_\theta(x_t, t)
+-\frac{1}{2}\frac{\partial}{\partial x}(x-\mu)^T\Sigma^{-1}(x-\mu) = -\Sigma^{-1}(x-\mu).
 $$
 
-by taking the partial derivative of a normal distribution.
+Thus we may approximate $$\nabla_{x_t}\log q(x_t)$$ in terms of predicted noise $$\varepsilon_{\theta}(x_t)$$ with
+
+$$
+\nabla_{x_t}\log q(x_t) = -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\varepsilon_\theta(x_t, t).
+$$
 
 Now, to approximate $$\nabla_{x_t}\log q(x_t)$$, we have
 
@@ -431,12 +435,12 @@ $$
 \begin{align*}
 \nabla_{x_t}\log q(x_t, y) &= \nabla_{x_t}\log (q(x_t)q(y \vert x_t)) \\
 &=\nabla_{x_t}\log q(x_t) + \nabla_{x_t}\log q(y \vert x_t) \\
-&\approx -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\epsilon_\theta(x_t, t) + \nabla_x \log f_{\phi}(y|x_t) \\
-&= -\frac{1}{\sqrt{1-\overline{\alpha}_t}}(\epsilon_\theta(x_t, t) - \sqrt{1-\overline{\alpha}_t}\nabla_x \log f_{\phi}(y|x_t))
+&\approx -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\varepsilon_\theta(x_t, t) + \nabla_{x_t} \log f_{\phi}(y|x_t) \\
+&= -\frac{1}{\sqrt{1-\overline{\alpha}_t}}(\varepsilon_\theta(x_t, t) - \sqrt{1-\overline{\alpha}_t}\nabla_{x_t} \log f_{\phi}(y|x_t))
 \end{align*}
 $$
 
-We can then define a new noise predictor:
+Thus, during inference, we can use the new noise predictor
 
 $$
 \begin{align*}
@@ -444,49 +448,59 @@ $$
 \end{align*}
 $$
 
+Given the external classifier $$f_{\phi}(y|x_t,t)$$, it wasn't entirely clear to us the optimal way to calculate the gradient with respect to $$x_t$$. In practice, we feel that this could be approximated by taking the difference in value of the prediction between two timesteps. 
+
 #### 4.2 Classifier-free
 
-Without the classifier, we can instead incorporate our noise predictor $$\epsilon_\theta$$ from the conditional and unconditional diffusion model.
+Assuming that we don't have a classifier, we can instead modify our original noise predictor $$\varepsilon_{\theta}$$ to learn conditional and unconditional generation.
 
-We parameterize our unconditional diffusion model $$p_\theta(x)$$ with the noise predictor $$\epsilon_\theta(x_t, t)$$ and our conditional diffusion model $$p_\theta(x\vert y)$$ with the noise predictor $$\epsilon_\theta(x_t, t, y)$$. We can train them with the same neural net by using a paired data set $$(x, y)$$, where the class label $$y$$ is omitted in a portion of the training in order for the model to learn how to generate images unconditionally.
+The conditional diffusion model $$\varepsilon_{\theta}(x_t,t,y)$$ is trained in the exact same way as the normal model, but with class labels $$y$$ added as an additional embedding to the input image. Some of these class labels are omitted during training so that the model still learns how to generate images unconditionally.
 
-Notice that without the gradient of the classifier, we just need to derive $$\nabla_{x_t}\log p(y \vert x_t)$$ from the above section. Representing it with the noise predictors above, we haveL
-
-$$
-\begin{align*}
-\nabla_{x_t}\log p(y \vert x_t) &= \nabla_{x_t}\log \frac{p(x_t \vert y)}{p(x_t)} \\
-&=\nabla_{x_t}\log p(x_t \vert y) - \nabla_{x_t} \log p(x_t) \\
-&= -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\left(\epsilon_\theta(x_t, t, y) -\epsilon_\theta(x_t, t)\right) \\
-\end{align*}
-$$
-
-Our new predictor then can be defined as:
+Absent a true classifier, the only thing we are missing in the above derivation is $$\nabla_{x_t}\log q(y \vert x_t)$$. We can approximate this value with our new noise predictors: 
 
 $$
 \begin{align*}
-\overline{\epsilon}_\theta(x_t, t, y) &= \epsilon_\theta(x_t, t, y) - \sqrt{1-\overline{\alpha}_t}\nabla_{x_t}\log p(x_t, y)\\
-&= \epsilon_\theta(x_t, t, y) + \left(\epsilon_\theta(x_t, t, y) - \epsilon_\theta(x_t, t)\right)
+\nabla_{x_t}\log q(y \vert x_t) &= \nabla_{x_t}\log \frac{q(x_t \vert y)}{q(x_t)} \\
+&=\nabla_{x_t}\log q(x_t \vert y) - \nabla_{x_t} \log q(x_t) \\
+&= -\frac{1}{\sqrt{1-\overline{\alpha}_t}}\left(\varepsilon_\theta(x_t, t, y) -\varepsilon_\theta(x_t, t)\right) \\
 \end{align*}
 $$
 
-The ultimate objective for classifier free guidance is to improve the quality of images as well as their correspondence with the conditional class label. Intuitively, the gradient of $$p(y \vert x_t)$$ tries to maximize the likelihood of the condition $$y$$ in order to make images match with their corresponding label.
+The ultimate objective for classifier free guidance is to improve the quality of images as well as their correspondence with the conditional class label. Intuitively, the gradient of $$q(y \vert x_t)$$ tries to maximize the likelihood of the condition $$y$$ in order to make images match with their corresponding label.
+
+In practice, it makes sense to weight this gradient with a weight $$w$$ so that we can control how much influence it has over the course of inference. Therefore, our new predictor is given by
+
+$$
+\begin{align*}
+\overline{\epsilon}_\theta(x_t, t, y) &= \epsilon_\theta(x_t, t, y) - \sqrt{1-\overline{\alpha}_t}w\nabla_{x_t}\log q(y | x_t)\\
+&= \epsilon_\theta(x_t, t, y) + w(\epsilon_\theta(x_t, t, y) - \epsilon_\theta(x_t, t)).
+\end{align*}
+$$
+
+If we reframe the weight with a scaling factor $$s := w+1$$, we have 
+
+$$
+\overline{\epsilon}_\theta(x_t, t, y) = \epsilon_\theta(x_t, t) + s(\epsilon_\theta(x_t, t, y) - \epsilon_\theta(x_t, t)),
+$$
+
+and it then becomes intuitively clear how our weight is influencing inference; when we place more weight on the gradient, we get an output closer to the theoretical conditional gradient, and conversely when the weight on the gradient is smaller, we get an output that is closer to unconditional diffusion. 
+
 <a id="final-conditional-objective"></a>
 
 ### 5. Modifying the conditional objective for Pix2Pix
 
-Using similar logic, we want to utilize classifier-free guidance with two conditionings, a previous image $$c_I$$ and the class label $$c_T$$.
+We can apply similar logic to obtain classifier-free guidance with two conditionings, a previous image $$c_I$$ and the class label $$c_T$$.
 
-In [1](https://arxiv.org/abs/2211.09800), the authors chose to omit only $$c_I$$ in $$5\%$$ of examples, only $$c_T$$ in $$5\%$$ of examples, and both $$c_I$$ and $$c_T$$ in $$5\%$$ of examples. In classifier-free guidance, we can also introduce scaling factors $$s_1, s_2, \dots, s_n \geq 1$$ to adjust how strongly we want to the generated image to correlate with the conditionings.
+In [Brooks et. al](https://arxiv.org/abs/2211.09800), the authors chose to omit only $$c_I$$ in $$5\%$$ of examples, only $$c_T$$ in $$5\%$$ of examples, and both $$c_I$$ and $$c_T$$ in $$5\%$$ of examples. This produces a robust noise estimator for different combinations of conditionings. 
 
-In our case, introducing $$s_I$$ and $$s_T$$ will adjust the strength of the class label condition and the input image condition. In turn, our predicted noise then becomes:
+For inference, we can similarly introduce scaling factors $$s_I, s_T$$ to adjust how strongly we want to the generated image to correlate with the class label condition and the input image condition, respectively. Our final noise estimator becomes
 
 $$
 \begin{align*}
-\overline{\epsilon}_\theta(x_t, c_I, c_T) &= \epsilon_\theta(x_t, \varnothing, \varnothing) + s_I(\epsilon_\theta(x_t, c_I, \varnothing) -  \epsilon_\theta(x_t, \varnothing, \varnothing)) + s_T(\epsilon_\theta(x_t, c_I, c_T) -  \epsilon_\theta(x_t, c_I, \varnothing))
+\overline{\epsilon}_\theta(x_t, c_I, c_T) &= \epsilon_\theta(x_t, \varnothing, \varnothing) + s_I(\epsilon_\theta(x_t, c_I, \varnothing) -  \epsilon_\theta(x_t, \varnothing, \varnothing)) \\
+&\qquad + s_T(\epsilon_\theta(x_t, c_I, c_T) -  \epsilon_\theta(x_t, c_I, \varnothing)).
 \end{align*}
 $$
-
-where the modified predictor can be extrapolated in the direction towards both conditionals.
 
 ## References
 
