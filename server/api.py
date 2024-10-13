@@ -1,15 +1,17 @@
 # server modules
-from flask import request, Response, jsonify, send_file
+from flask import request, jsonify, send_file
 from apiflask import APIBlueprint
 from PIL import Image
 from io import BytesIO
-from werkzeug.datastructures import FileStorage
 from server.utils.ModelNotFoundException import ModelNotFoundException
-from server.utils.s3 import pil_to_s3, s3_to_pil
 
 # inference modules
-from server.config import OPTS, MODELS, REMOTE, IMAGE_HEIGHT, IMAGE_WIDTH
-from server.utils.modelbit import modelbit_inference
+from server.config import OPTS, MODELS, IMAGE_HEIGHT, IMAGE_WIDTH
+from server.pix2pix import (
+    inference_pix2pix_base,
+    inference_pix2pix_full_no_cfg_no_ddim,
+)
+
 
 api = APIBlueprint("api", __name__, url_prefix="/api")
 
@@ -33,27 +35,12 @@ def validate_model(model):
     if model not in MODELS:
         raise ModelNotFoundException()
 
-
-def do_inference(opts, image, remote=False):
-    if opts["model"] not in MODELS:
-        raise ModelNotFoundException()
-    if remote:
-        pil_to_s3(image)
-        modelbit_inference(opts, opts["model"])
-        output_image = s3_to_pil()
-        save_pil(output_image)
-    else:
-        raise Exception("remote inference not enabled")
-        # commenting out b/c assuming modelbit used
-        # save space in render!
-        # pil_to_s3(image)
-        # match opts["model"]:
-        #     case "pix2pix-base":
-        #         inference_pix2pix_base_modelbit(opts)
-        #     case "pix2pix-full-no-cfg-no-ddim":
-        #         inference_pix2pix_full_no_cfg_no_ddim_modelbit(opts)
-        # output_image = s3_to_pil()
-        # save_pil(output_image)
+def do_inference(opts, image):
+    match opts["model"]:
+        case "pix2pix-base":
+            inference_pix2pix_base(opts, image)
+        case "pix2pix-full-no-cfg-no-ddim":
+            inference_pix2pix_full_no_cfg_no_ddim(opts, image)
 
 
 @api.route("/")
@@ -82,7 +69,7 @@ def inference():
 
     # transform to pil image
     image = get_pil_image(image)
-    image = image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
+    image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
     print(image, flush=True)
 
     # convert form to dictionary
@@ -115,7 +102,7 @@ def inference():
 
     # do inference!
     try:
-        do_inference(opts, image, remote=REMOTE)
+        do_inference(opts, image)
     except ModelNotFoundException:
         resp = jsonify({"message": f"Error: model type does not exist!"})
         resp.status_code = 400

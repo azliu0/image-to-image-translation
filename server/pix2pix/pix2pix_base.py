@@ -1,12 +1,9 @@
-import PIL
-import requests
 import torch
-from diffusers import (
-    StableDiffusionInstructPix2PixPipeline,
-    EulerAncestralDiscreteScheduler,
-)
+from typing import cast
+from diffusers.pipelines.stable_diffusion.pipeline_output import StableDiffusionPipelineOutput
+from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion_instruct_pix2pix import StableDiffusionInstructPix2PixPipeline
+from diffusers.schedulers.scheduling_euler_ancestral_discrete import EulerAncestralDiscreteScheduler
 from server.config import IMAGE_HEIGHT, IMAGE_WIDTH
-from server.utils.s3 import s3_to_pil, pil_to_s3
 
 model_id = "timbrooks/instruct-pix2pix"
 pipe = StableDiffusionInstructPix2PixPipeline.from_pretrained(
@@ -17,31 +14,11 @@ pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.conf
 
 def inference_pix2pix_base(opts, image):
     image = image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
-    image = pipe(
-        opts["prompt"],
-        image,
+    out = cast(StableDiffusionPipelineOutput, pipe.__call__(
+        prompt=opts["prompt"],
+        image=image,
         num_inference_steps=opts["inferenceSteps"],
-        image_guidance_scale=1.0 / opts["temperature"],
-    ).images[0]
+        guidance_scale=1.0 / opts["temperature"],
+    ))
+    image = out.images[0]
     image.save("output.png")
-
-
-def inference_pix2pix_base_modelbit(opts):
-    try:
-        image = s3_to_pil()
-    except Exception as e:
-        raise Exception(f"{e}")
-
-    image = image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
-    print(image)
-    output_image = pipe(
-        opts["prompt"],
-        image,
-        num_inference_steps=opts["inferenceSteps"],
-        image_guidance_scale=1.0 / opts["temperature"],
-    ).images[0]
-
-    try:
-        pil_to_s3(output_image)
-    except Exception as e:
-        raise Exception(f"{e}")

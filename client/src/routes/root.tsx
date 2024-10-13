@@ -178,12 +178,9 @@ const RootPage = () => {
     formData.append("negativePrompt", negativePrompt as string);
     formData.append("files[]", files[0]);
     const res = await fetch(
-      "https://image-to-image-translation-server.onrender.com/api/inference",
+      "/api/inference",
       {
         method: "POST",
-        headers: {
-          "ngrok-skip-browser-warning": "1",
-        },
         body: formData,
       }
     );
@@ -564,19 +561,6 @@ const RootPage = () => {
           >
             {hiddenSettings ? "Show settings" : "Close settings"}
           </Button>
-        </div>
-        <div className={classes.footer}>
-          Made with ❤️ by{" "}
-          <a href="https://azliu.cc" target="_blank">
-            Andrew Liu
-          </a>{" "}
-          &{" "}
-          <a
-            href="https://www.linkedin.com/in/jack-chen-6466a71b5/"
-            target="_blank"
-          >
-            Jack Chen
-          </a>{" "}
         </div>
       </AnimatedPage>
     </>

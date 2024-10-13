@@ -88,19 +88,6 @@ const Page = ({ mdPageLink, displayTitle }: PageInterface) => {
             )}
           </Flex>
         </Center>
-        <div className={classes.footer}>
-          Made with ❤️ by{" "}
-          <a href="https://azliu.cc" target="_blank">
-            Andrew Liu
-          </a>{" "}
-          &{" "}
-          <a
-            href="https://www.linkedin.com/in/jack-chen-6466a71b5/"
-            target="_blank"
-          >
-            Jack Chen
-          </a>{" "}
-        </div>
       </AnimatedPage>
     </>
   );

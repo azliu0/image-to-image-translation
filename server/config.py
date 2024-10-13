@@ -31,8 +31,3 @@ OPTS = [
 ]
 MODELS = ["pix2pix-base", "pix2pix-full-no-cfg-no-ddim"]
 TARGET_IMAGE_PATH = "output.png"
-REMOTE = True
-MODELBIT_URLS = {
-    "pix2pix-base": "https://andrewliu.us-east-1.modelbit.com/v1/inference_pix2pix_base_modelbit/latest",
-    "pix2pix-full-no-cfg-no-ddim": "https://andrewliu.us-east-1.modelbit.com/v1/inference_pix2pix_full_no_cfg_no_ddim_modelbit/latest",
-}

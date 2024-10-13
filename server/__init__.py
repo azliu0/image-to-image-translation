@@ -15,7 +15,9 @@ def create_app():
 
     with app.app_context():
         cors.init_app(
-            app, origins=app.config.get("ALLOWED_DOMAINS"), supports_credentials=True
+            app,
+            origins=app.config.get("ALLOWED_DOMAINS", []),
+            supports_credentials=True,
         )
 
         from server.api import api

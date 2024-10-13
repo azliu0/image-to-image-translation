@@ -52,8 +52,6 @@ Images with 512x512 base resolution will generally work best, since this is the 
 
 This website was built from scratch. The main frontend framework was [React](https://react.dev/), and we had some fun integrating libraries like [Mantine UI](https://mantine.dev/) and [Framer Motion](https://www.framer.com/motion/) for styling quirks. We used [react-markdown](https://github.com/remarkjs/react-markdown) for markdown parsing, along with [remark-math](https://www.npmjs.com/package/remark-math) and [react-katex](https://www.npmjs.com/package/react-katex) to handling $$\LaTeX$$ parsing inside of markdown. The backend is a [Flask](https://flask.palletsprojects.com/en/3.0.x/) server. 
 
-We struggled greatly with figuring out how to deploy our model. Our primary constraints were model size and cost, so we had to look for a serverless inference solution that could support more than 4GB RAM (roughly the size of the model), preferably without having to set up lots of additional infrastructure. We eventually settled with [Modelbit](https://www.modelbit.com/), using [AWS S3](https://aws.amazon.com/s3/) buckets to store and download images in the deployed endpoint. Note in particular that **uploaded images are not private**. 
-
 Both the react client and flask server are deployed on [Render](https://render.com/). Feel free to check out our [repository](https://github.com/azliu0/image-to-image-translation)!
 
 ### Pages
