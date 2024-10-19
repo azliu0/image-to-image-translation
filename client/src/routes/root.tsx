@@ -159,9 +159,7 @@ const RootPage = () => {
     setLoadingGeneration(true);
     notifications.show({
       title: "image submitted!",
-      message:
-        "your request is being processed. \n \
-        this may take a few minutes...",
+      message: "your request is being processed...",
       color: "green",
       loading: false,
       icon: <IconCheck />,
@@ -448,14 +446,12 @@ const RootPage = () => {
                         />
                       </div>
                       <div>
-                        do not refresh the page. this might take a few minutes,
-                        feel free to leave this page and come back.
+                        do not refresh the page. if this takes more than a few seconds,
+                        a container is probably cold-starting
                       </div>
                       <div>
-                        if it is taking too long, consider lowering the number
-                        of inference steps. to see how each of the settings
-                        affects the quality of the final image, check out the
-                        Details page!
+                        you should experience much faster times after the first
+                        image is processed
                       </div>
                     </Group>
                   ) : (

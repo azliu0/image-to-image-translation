@@ -1,5 +1,6 @@
-torch==2.1.2
-diffusers==0.25.1
+torch==2.2.0
+diffusers==0.26.0
+huggingface_hub==0.25.2
 accelerate==0.26.1
 safetensors==0.4.1
 transformers==4.36.2
@@ -9,3 +10,4 @@ python-dotenv==1.0.0
 APIFlask==2.1.0
 Flask==3.0.0
 boto3==1.34.21
+modal==0.64.199

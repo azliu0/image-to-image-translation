@@ -13,6 +13,12 @@ ALLOWED_DOMAINS = [FRONTEND_URL, "https://www.image.azliu.cc"]
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 AWS_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME")
+USE_REMOTE = os.environ.get("USE_REMOTE", True)
+
+# prod config
+MODAL_TOKEN_ID = os.environ.get("MODAL_TOKEN_ID", "")
+MODAL_TOKEN_SECRET = os.environ.get("MODAL_TOKEN_SECRET", "")
+ENV = os.environ.get("ENV", "development")
 
 # model config
 VOCAB_SIZE = 49408
@@ -29,5 +35,9 @@ OPTS = [
     {"key": "CFG", "int": True, "float": False},
     {"key": "negativePrompt", "int": False, "float": False},
 ]
-MODELS = ["pix2pix-base", "pix2pix-full-no-cfg-no-ddim"]
+INFERENCE_URLS = {
+    "pix2pix-base": "https://azliu0--image-to-image-translation-inference-pix2pix-base-modal.modal.run",
+    "pix2pix-full-no-cfg-no-ddim": "https://azliu0--image-to-image-translation-inference-pix2pix-ful-cf33b1.modal.run",
+}
+MODELS = list(INFERENCE_URLS.keys())
 TARGET_IMAGE_PATH = "output.png"

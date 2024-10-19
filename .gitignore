@@ -1,5 +1,7 @@
 venv/
 .env
-data/model.ckpt*
+*model.ckpt*
 __pycache__
 .DS_Store
+output.png
+.vercel

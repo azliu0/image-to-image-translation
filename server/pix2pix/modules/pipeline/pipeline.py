@@ -75,7 +75,7 @@ def generate(
             input_image_tensor = input_image.resize([IMAGE_WIDTH, IMAGE_HEIGHT])
             input_image_tensor = np.array(input_image_tensor)
             # (h,w,c)
-            input_image_tensor = torch.tensor(input_image_tensor, dtype=torch.float32)
+            input_image_tensor = torch.tensor(input_image_tensor, dtype=torch.float32, device=device)
             # rescale image pixel values from [0,255] to [-1,1]
             input_image_tensor = rescale(input_image_tensor, (0, 255), (-1, 1))
             # add batch dimension: (b,h,w,c)
@@ -86,6 +86,8 @@ def generate(
             encoder_noise = torch.randn(
                 latents_shape, generator=generator, device=device
             )
+            input_image_tensor = input_image_tensor.to(device)
+
             latents = encoder(input_image_tensor, encoder_noise)
 
             # high strength = high noise = more variance
@@ -121,7 +123,7 @@ def generate(
 
         images = rescale(images, (-1, 1), (0, 255), clamp=True)
         images = images.permute(0, 2, 3, 1)
-        images = images.numpy()
+        images = images.cpu().numpy()
         return images[0]
 
 

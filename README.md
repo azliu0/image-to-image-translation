@@ -1,45 +1,31 @@
-# image-to-image-translation: visualizer and implementation of instructpix2pix
-
-## [https://image.azliu.cc](https://image.azliu.cc)
-
-- Client was built from scratch! Details about this project, including scope, stack, etc. can be found on the [details page](https://www.image.azliu.cc/details). 
-
-- Math details can be found on the [math page](https://www.image.azliu.cc/math). 
-
-- Model details can be found on the [models page](https://www.image.azliu.cc/models).
-
-- Finally, browse some results on the [gallery page](https://www.image.azliu.cc/gallery).
+# image-to-image-translation
 
 ## Setup
 
 ### Client
-
-The client is a react app built with yarn: 
 
 ```sh
 cd client
 npm install && npm run dev
 ```
 
-By default, the client runs on port `5173`.
-
 ### Server
 
-To run the server, create a python virtual environment and install the dependencies in `requirements.txt`. Then, in the root directory, run 
+After installing dependencies, run:
 
 ```sh
-python3 run.py
+python3 wsgi.py
 ```
 
-By default, the server runs on port `3000`. The only function of the server is to parse requests from the client and submit to our model endpoint (see below). 
+## Model
 
-## Web deployment
+Right now the app serves two models:
 
-The client and flask server is deployed on [Render](https://render.com/). 
+1. `image-to-image` from the `diffusers` library, which is just imported and run directly.
+2. An implementation of `instruct-pix2pix`, which lives in `server/pix2pix/modules`. This implementation was mostly taken from [here](https://github.com/hkproj/pytorch-stable-diffusion).
 
-## Model deployment
+The models are deployed on [Modal Labs](https://modal.com/) via [web endpoints](https://modal.com/docs/guide/web-endpoints). 
 
-## TODO
+To download weights, run `cd server/pix2pix && python3 load-weights.py`, which stores them in a [Modal volume](https://modal.com/docs/guide/volumes).
 
-- finish the remainder of the models
-- update the gallery with actual results
+To run inference locally, set `USE_REMOTE` to `False` in `server/config.py`. In this case, you'll need to download the weights locally into the `data/` directory. See `server/pix2pix/load-weights.py` for the relevant huggingface URL.
