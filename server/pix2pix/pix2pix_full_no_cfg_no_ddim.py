@@ -35,7 +35,7 @@ sampler = "ddpm"
 
 
 def inference_pix2pix_full_no_cfg_no_ddim(opts, image):
-    if not loader.models:
+    if not hasattr(loader, 'models'):
         loader.load()
 
     output_image = generate(
